@@ -45,7 +45,29 @@ function main() {
   const dataset = { minDate, maxDate, parentNames: PARENT_NAMES, generatedAt: new Date().toISOString(), rows };
 
   const template = fs.readFileSync(path.join(__dirname, "dashboard_template.html"), "utf8");
-  const out = template.replace("__DATA_PLACEHOLDER__", JSON.stringify(dataset));
+  const fragment = template.replace("__DATA_PLACEHOLDER__", JSON.stringify(dataset));
+
+  // Il template e' un frammento pensato per essere incollato dentro l'involucro
+  // <html><head>...</head><body> che Claude aggiunge da se' quando pubblica un Artifact.
+  // Servito "nudo" su GitHub Pages non ha quell'involucro: senza <meta name="color-scheme">
+  // il dark-mode automatico del browser reinterpreta i colori in modo incoerente
+  // (scritte nere illeggibili su sfondo scuro). Qui aggiungiamo l'involucro completo.
+  const titleMatch = fragment.match(/<title>[\s\S]*?<\/title>/);
+  const title = titleMatch ? titleMatch[0] : "<title>Dashboard</title>";
+  const body = titleMatch ? fragment.replace(titleMatch[0], "") : fragment;
+  const out = `<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+${title}
+</head>
+<body>
+${body}
+</body>
+</html>
+`;
 
   const docsDir = path.join(REPO_DIR, "docs");
   if (!fs.existsSync(docsDir)) fs.mkdirSync(docsDir, { recursive: true });
