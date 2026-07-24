@@ -41,37 +41,64 @@ function toISO(ddmmyyyy) {
 
 async function main() {
   const history = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
-  const seen = new Set(history.map((r) => r[1] + "|" + r[0] + "|" + r[2] + "|" + r[3]));
-  let totalNew = 0;
+  // key -> indice in history, per poter sovrascrivere in-place la giornata ancora aperta
+  // (chiamato piu' volte al giorno: i giorni passati sono definitivi e si saltano se gia'
+  // visti, il giorno piu' recente del batch invece si aggiorna sempre, perche' sellerboard
+  // rivede i numeri di oggi man mano che arrivano nuovi ordini/resi).
+  const index = new Map();
+  history.forEach((r, i) => index.set(r[1] + "|" + r[0] + "|" + r[2] + "|" + r[3], i));
+
+  let totalNew = 0, totalUpdated = 0;
 
   for (const acc of ACCOUNTS) {
     if (!acc.url) { console.log(`[${acc.key}] nessun URL configurato, salto`); continue; }
     try {
       const { data: csv } = await axios.get(acc.url, { timeout: 30000, responseType: "text", headers: { "User-Agent": "Mozilla/5.0" } });
-      const rows = parseCSV(csv);
-      let inserted = 0;
-      for (const row of rows) {
-        const dateCol = findCol(row, ["date", "data", "day", "period"]);
-        const asinCol = findCol(row, ["asin"]);
-        const mktCol = findCol(row, ["marketplace", "country"]);
+      const parsedRows = parseCSV(csv);
+
+      const dateCol = findCol(parsedRows[0] || {}, ["date", "data", "day", "period"]);
+      const asinCol = findCol(parsedRows[0] || {}, ["asin"]);
+      const mktCol = findCol(parsedRows[0] || {}, ["marketplace", "country"]);
+
+      let maxDateInBatch = null;
+      for (const row of parsedRows) {
+        const rawDate = row[dateCol] || "";
+        if (!rawDate) continue;
+        const iso = toISO(rawDate);
+        if (!maxDateInBatch || iso > maxDateInBatch) maxDateInBatch = iso;
+      }
+
+      let inserted = 0, updated = 0;
+      for (const row of parsedRows) {
         const rawDate = row[dateCol] || "";
         const asin = row[asinCol] || "";
         if (!rawDate || !asin) continue;
         const iso = toISO(rawDate);
         const marketplace = (row[mktCol] || acc.defaultMarketplace).replace("Amazon.", "");
         const dedupeKey = acc.key + "|" + iso + "|" + marketplace + "|" + asin;
-        if (seen.has(dedupeKey)) continue;
+        const isOpenDay = iso === maxDateInBatch;
+
+        const existingIdx = index.get(dedupeKey);
+        if (existingIdx !== undefined && !isOpenDay) continue; // giorno chiuso e gia' registrato: niente da fare
+
         const sales = num(row["SalesOrganic"]) + num(row["SalesPPC"]);
         const netProfit = num(row["NetProfit"]);
         const adSpend = Math.abs(num(row["Ads spend"]));
         const refunds = num(row["Refunds"]);
         const units = (parseInt(row["UnitsOrganic"]) || 0) + (parseInt(row["UnitsPPC"]) || 0);
-        history.push([iso, acc.key, marketplace, asin, sales, netProfit, adSpend, refunds, units]);
-        seen.add(dedupeKey);
-        inserted++;
+        const record = [iso, acc.key, marketplace, asin, sales, netProfit, adSpend, refunds, units];
+
+        if (existingIdx !== undefined) {
+          history[existingIdx] = record; // giorno ancora aperto: sovrascrivi con i numeri rivisti
+          updated++;
+        } else {
+          index.set(dedupeKey, history.length);
+          history.push(record);
+          inserted++;
+        }
       }
-      totalNew += inserted;
-      console.log(`[${acc.key}] Prodotti: ${inserted} nuovi record (${rows.length - inserted} gia' presenti)`);
+      totalNew += inserted; totalUpdated += updated;
+      console.log(`[${acc.key}] Prodotti: ${inserted} nuovi record, ${updated} aggiornati (giorno aperto: ${maxDateInBatch})`);
     } catch (e) {
       console.error(`[${acc.key}] ERRORE: ${e.message}`);
       process.exitCode = 1;
@@ -79,7 +106,7 @@ async function main() {
   }
 
   fs.writeFileSync(HISTORY_FILE, JSON.stringify(history));
-  console.log("Totale righe storiche:", history.length, "(nuove oggi:", totalNew + ")");
+  console.log("Totale righe storiche:", history.length, "(nuove:", totalNew, "aggiornate:", totalUpdated + ")");
 }
 
 main().catch((e) => { console.error("FATAL:", e); process.exit(1); });

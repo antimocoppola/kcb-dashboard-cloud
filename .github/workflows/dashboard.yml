@@ -2,9 +2,11 @@ name: Aggiorna dashboard KCB
 
 on:
   schedule:
-    # 09:15 UTC = 10:15 CET (inverno) / 11:15 CEST (estate) — dopo la chiusura
-    # della giornata USA, che localmente non si stabilizza prima delle ~9:40.
-    - cron: '15 9 * * *'
+    # Ogni ora, UTC 8-22 = locale (Europe/Rome) 9/10-22/23 a seconda dell'ora
+    # legale — copre sempre la finestra 10-23 richiesta, con al massimo un'ora
+    # di "margine" in piu' a uno dei due estremi secondo la stagione (nessun
+    # aggiustamento manuale da fare due volte l'anno).
+    - cron: '0 8-22 * * *'
   workflow_dispatch: {}
 
 permissions:
