@@ -1,0 +1,755 @@
+<title>EU · Sales &amp; profitability explorer</title>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Dashboard interattiva vendite e profitto: scegli un intervallo di date e vedi totale, per paese e per linea di prodotto per l'account EU, con USA a parte.</h2>
+<style>
+:root{
+  --paper:#EEF0EC; --surface:#FFFFFF; --surface-2:#E2E6DF;
+  --ink:#14181A; --ink-2:#52585A; --ink-3:#868C88; --line:rgba(20,24,26,.14);
+  --accent:#2C4A7C; --accent-soft:#E3E9F2; --accent-ink:#1B3357;
+  --usa:#A34B2E; --usa-soft:#F4E7DF; --usa-ink:#6E3018;
+  --good:#3F7D43; --good-soft:#E7F1E3; --good-ink:#255A29;
+  --warn:#AD7A1E; --warn-soft:#FAF0DC; --warn-ink:#6B4B0F;
+  --bad:#B8433A;  --bad-soft:#FBEAE8;  --bad-ink:#7A2A22;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono: ui-monospace,"Cascadia Code","SF Mono","Roboto Mono",Consolas,monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --paper:#12151A; --surface:#191D22; --surface-2:#212630;
+  --ink:#E7ECEF; --ink-2:#A7AFB4; --ink-3:#6E767B; --line:rgba(231,236,239,.14);
+  --accent:#7FA8DC; --accent-soft:#1E2A3D; --accent-ink:#AECBF0;
+  --usa:#E08F63; --usa-soft:#2E2015; --usa-ink:#F0B592;
+  --good:#7BC47B; --good-soft:#1D2C1C; --good-ink:#A6DDA0;
+  --warn:#E0AE4E; --warn-soft:#332913; --warn-ink:#EFCB82;
+  --bad:#E08076;  --bad-soft:#331815;  --bad-ink:#F0AA9F;
+}}
+:root[data-theme="dark"]{
+  --paper:#12151A; --surface:#191D22; --surface-2:#212630;
+  --ink:#E7ECEF; --ink-2:#A7AFB4; --ink-3:#6E767B; --line:rgba(231,236,239,.14);
+  --accent:#7FA8DC; --accent-soft:#1E2A3D; --accent-ink:#AECBF0;
+  --usa:#E08F63; --usa-soft:#2E2015; --usa-ink:#F0B592;
+  --good:#7BC47B; --good-soft:#1D2C1C; --good-ink:#A6DDA0;
+  --warn:#E0AE4E; --warn-soft:#332913; --warn-ink:#EFCB82;
+  --bad:#E08076;  --bad-soft:#331815;  --bad-ink:#F0AA9F;
+}
+:root[data-theme="light"]{
+  --paper:#EEF0EC; --surface:#FFFFFF; --surface-2:#E2E6DF;
+  --ink:#14181A; --ink-2:#52585A; --ink-3:#868C88; --line:rgba(20,24,26,.14);
+  --accent:#2C4A7C; --accent-soft:#E3E9F2; --accent-ink:#1B3357;
+  --usa:#A34B2E; --usa-soft:#F4E7DF; --usa-ink:#6E3018;
+  --good:#3F7D43; --good-soft:#E7F1E3; --good-ink:#255A29;
+  --warn:#AD7A1E; --warn-soft:#FAF0DC; --warn-ink:#6B4B0F;
+  --bad:#B8433A;  --bad-soft:#FBEAE8;  --bad-ink:#7A2A22;
+}
+*{box-sizing:border-box;}
+.dash{font-family:var(--mono); color:var(--ink); background:var(--paper); border-radius:16px; padding:1.5rem; display:flex; flex-direction:column; gap:1.5rem;}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+.prose{font-family:var(--sans);}
+.masthead{display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap;}
+.eyebrow{font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-ink); background:var(--accent-soft); display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:5px; width:fit-content; border-radius:0 var(--radius) var(--radius) 0; border-left:3px solid var(--accent);}
+.title{font-family:var(--sans); font-size:21px; font-weight:500; margin:.6rem 0 0; text-wrap:balance; letter-spacing:-.01em;}
+.subtitle{font-family:var(--sans); font-size:13px; color:var(--ink-2); margin:.25rem 0 0; max-width:52ch;}
+.updated-tag{font-size:11px; color:var(--ink-3); margin-top:.4rem;}
+.legend{display:flex; align-items:center; gap:14px; font-size:11px; color:var(--ink-3); background:var(--surface); border:.5px solid var(--line); border-radius:var(--radius); padding:8px 12px; flex:none;}
+.legend .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:1px;}
+.legend .dot.eu{background:var(--accent);}
+.legend .dot.usa{background:var(--usa);}
+.controls{background:var(--surface); border:.5px solid var(--line); border-radius:var(--radius); padding:1rem; display:flex; flex-direction:column; gap:10px;}
+.controls-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.controls-row label{font-size:11px; color:var(--ink-3); font-weight:500; text-transform:uppercase; letter-spacing:.04em;}
+input[type="date"]{width:auto; min-width:150px; font-family:var(--mono);}
+.presets{display:flex; gap:6px; flex-wrap:wrap;}
+.presets button{font-size:12px; padding:6px 10px; height:auto; font-family:var(--mono);}
+.range-info{font-size:12px; color:var(--ink-3);}
+.kpirow{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px;}
+.kpi{background:var(--surface); border:.5px solid var(--line); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; padding:.85rem .95rem; display:flex; flex-direction:column; gap:4px;}
+.kpi .lbl{font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3);}
+.kpi .val{font-size:22px; font-weight:500; font-variant-numeric:tabular-nums;}
+.section{display:flex; flex-direction:column; gap:8px;}
+.sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+.sec-title{font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:.05em; display:flex; align-items:center; gap:6px;}
+.sec-title i{font-size:15px; color:var(--accent);}
+.sec-note{font-size:11px; color:var(--ink-3); font-family:var(--sans);}
+.twin{display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; align-items:start;}
+@media (max-width:760px){ .twin{grid-template-columns:1fr;} }
+table{width:100%; border-collapse:collapse; font-size:13px;}
+th{text-align:right; font-size:10px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); padding:0 8px 6px; border-bottom:.5px solid var(--line);}
+th:first-child, td:first-child{text-align:left;}
+td{padding:7px 8px; text-align:right; border-bottom:.5px solid var(--line);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+.country-name{font-weight:500; text-transform:capitalize; font-family:var(--sans);}
+.tblwrap{overflow-x:auto; background:var(--surface); border:.5px solid var(--line); border-radius:var(--radius); padding:.25rem .75rem;}
+.pill{display:inline-block; padding:2px 8px; border-radius:99px; font-size:11px; font-weight:500; white-space:nowrap;}
+.pill.good{background:var(--good-soft); color:var(--good-ink);}
+.pill.warn{background:var(--warn-soft); color:var(--warn-ink);}
+.pill.bad{background:var(--bad-soft); color:var(--bad-ink);}
+.tgt{font-size:10px; font-weight:400; color:var(--ink-3); margin-left:3px; white-space:nowrap;}
+.tgt.nd{font-style:italic;}
+.neg{color:var(--bad-ink);}
+.ledger{display:flex; flex-direction:column; gap:8px;}
+details{background:var(--surface); border:.5px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+summary{list-style:none; cursor:pointer; padding:.65rem .85rem; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+summary::-webkit-details-marker{display:none;}
+summary .car{font-size:15px; color:var(--ink-3); transition:transform .15s ease; flex:none;}
+details[open] summary .car{transform:rotate(90deg);}
+summary .pname{font-weight:500; font-size:13px; min-width:96px;}
+summary .ptag{font-size:10px; color:var(--ink-3); font-family:var(--sans);}
+summary .chips{display:flex; gap:6px; flex-wrap:wrap; margin-left:auto; align-items:center;}
+summary .stat{font-size:11px; color:var(--ink-2); white-space:nowrap;}
+summary .stat b{color:var(--ink); font-weight:500;}
+.detail-body{padding:0 .85rem .75rem;}
+.footnote{font-size:11px; color:var(--ink-3); line-height:1.7; font-family:var(--sans); max-width:78ch;}
+.acct-tag{font-size:9px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--usa-ink); background:var(--usa-soft); padding:2px 7px; border-radius:4px; margin-left:6px; vertical-align:1px; display:inline-flex; align-items:center; gap:3px;}
+.acct-tag i{font-size:10px;}
+tr.sep-row td{border-bottom:none; padding:8px 8px 4px; background:var(--usa-soft);}
+tr.sep-row .sep-label{font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--usa-ink); text-align:left; font-family:var(--sans); display:flex; align-items:center; gap:4px;}
+tr.usa-row td{background:var(--usa-soft);}
+tr.usa-row td:first-child{border-left:3px solid var(--usa);}
+details.other-account{border-radius:0 var(--radius) var(--radius) 0; border-left:3px solid var(--usa); margin-top:2px;}
+.empty-msg{font-size:13px; color:var(--ink-3); text-align:center; padding:1.5rem; font-family:var(--sans);}
+:where(a){color:var(--accent-ink);}
+@media (prefers-reduced-motion:reduce){ summary .car{transition:none;} }
+@media (max-width:520px){
+  summary .chips{width:100%; margin-left:0;}
+  .kpi .val{font-size:18px;}
+  .masthead{flex-direction:column;}
+}
+</style>
+
+<div class="dash">
+  <div class="masthead">
+    <div>
+      <span class="eyebrow"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Sellerboard &middot; Koala Babycare</span>
+      <p class="title">Vendite e profitto &middot; 10 marketplace EU</p>
+      <p class="subtitle">Scegli un intervallo di date per ricalcolare tutta la dashboard, calcolata nel browser dal tuo storico completo.</p>
+      <p class="updated-tag" id="updated-tag"></p>
+    </div>
+    <div class="legend">
+      <span><span class="dot eu"></span>EU (nei totali)</span>
+      <span><span class="dot usa"></span>USA (a parte, in $)</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="controls-row">
+      <label for="date-from">Dal</label>
+      <input type="date" id="date-from" />
+      <label for="date-to">Al</label>
+      <input type="date" id="date-to" />
+      <span class="range-info" id="range-info"></span>
+    </div>
+    <div class="presets" id="presets"></div>
+  </div>
+
+  <div class="kpirow" id="kpi-row"></div>
+
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title"><i class="ti ti-world" aria-hidden="true"></i> Per paese</span>
+      <span class="sec-note">EU ordinato per vendite &middot; USA a parte in fondo</span>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr>
+          <th>Paese</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Refund</th>
+        </tr></thead>
+        <tbody id="country-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="twin">
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title"><i class="ti ti-package" aria-hidden="true"></i> Per prodotto &middot; per paese</span>
+        <span class="sec-note">clic per il paese</span>
+      </div>
+      <div class="ledger" id="product-ledger"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">
+        <span class="sec-title"><i class="ti ti-map-pin" aria-hidden="true"></i> Per paese &middot; per prodotto</span>
+        <span class="sec-note">clic per il prodotto</span>
+      </div>
+      <div class="ledger" id="country-ledger"></div>
+    </div>
+  </div>
+
+  <p class="footnote" id="footnote"></p>
+</div>
+
+<script>
+const DATASET = __DATA_PLACEHOLDER__;
+const ROWS = DATASET.rows;
+const PARENT_NAMES = DATASET.parentNames;
+const MIN_DATE = DATASET.minDate;
+const MAX_DATE = DATASET.maxDate;
+const GENERATED_AT = DATASET.generatedAt;
+
+const fmtEUR = (v) => (v<0 ? '-€' : '€') + Math.abs(Math.round(v)).toLocaleString('it-IT');
+const fmtUSD = (v) => (v<0 ? '-$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+const fmtPct = (v) => (Math.round(v*10)/10).toLocaleString('it-IT') + '%';
+const marginClass = (v) => v>=20 ? 'good' : v>=10 ? 'warn' : 'bad';
+const acosClass = (v) => v<=10 ? 'good' : v<=20 ? 'warn' : 'bad';
+const resiClass = (v) => v<=10 ? 'good' : v<=20 ? 'warn' : 'bad';
+const pct = (n) => Math.round(n*10)/10;
+const round = (n) => Math.round(n);
+const meaningful = (o) => o.sales > 0 || o.refunds > 0 || Math.abs(o.netProfit) >= 1;
+function metrics(o) {
+  return { sales: round(o.sales), netProfit: round(o.netProfit), adSpend: round(o.adSpend), units: round(o.units),
+    marginPct: o.sales>0 ? pct(o.netProfit/o.sales*100) : 0,
+    acosPct: o.sales>0 ? pct(o.adSpend/o.sales*100) : 0,
+    resiPct: o.units>0 ? pct(o.refunds/o.units*100) : 0 };
+}
+const fmtUnits = (v) => Math.round(v).toLocaleString('it-IT');
+function emptyAgg(){ return { sales:0, netProfit:0, adSpend:0, refunds:0, units:0 }; }
+function addRow(agg, r){
+  agg.sales += r[4]; agg.netProfit += r[5]; agg.adSpend += r[6]; agg.refunds += r[7]; agg.units += r[8];
+}
+
+function shiftDate(iso, days){
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function shiftMonths(iso, months){
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString().slice(0,10);
+}
+function startOfYear(iso){
+  const [y] = iso.split("-");
+  return y + "-01-01";
+}
+function startOfMonth(iso){
+  const [y,m] = iso.split("-");
+  return y + "-" + m + "-01";
+}
+function fmtDateIt(iso){
+  const [y,m,d] = iso.split("-");
+  return d + "/" + m + "/" + y;
+}
+
+// Target KPI Q3 2026, per paese - l'utente li passa uno alla volta; ogni paese e' una
+// chiave a se' con la stessa forma (overall/monthly/parents), cosi' aggiungerne uno nuovo
+// e' solo questione di aggiungere una voce qui sotto, nessuna modifica alla logica.
+// Attivi SOLO quando l'intervallo selezionato e' esattamente una settimana lun-dom
+// la cui maggioranza di giorni cade in un mese 2026 tra luglio e settembre.
+const COUNTRY_TARGETS = {
+  it: { // forniti dall'utente il 2026-07-16
+    overall: { marginPct: 27, acosPct: 7.5, resiPct: 8 },
+    monthly: {
+      7: { sales: 60000, cm: 15000 },
+      8: { sales: 66000, cm: 17000 },
+      9: { sales: 64000, cm: 16000 },
+    },
+    parents: {
+      KCB1: { acosPct: 6,  marginPct: 27, resiPct: 12,  sales: 15000, cm: 4000 },
+      KSC:  { acosPct: 9,  marginPct: 22, resiPct: 7.5, sales: 8000,  cm: 2000 },
+      KCB2: { acosPct: 5,  marginPct: 32, resiPct: 12,  sales: 10000, cm: 2500 },
+      HUG:  { acosPct: 10, marginPct: 26, resiPct: 3,   sales: 10000, cm: 2500 },
+      KPH:  { acosPct: 8,  marginPct: 25, resiPct: 6,   sales: 5000,  cm: 1500 },
+      KST:  { acosPct: 7,  marginPct: 28, resiPct: 4,   sales: 8000,  cm: 2000 },
+    },
+  },
+  de: { // forniti dall'utente il 2026-07-16
+    overall: { marginPct: 24, acosPct: 8, resiPct: 15 },
+    monthly: {
+      7: { sales: 59000, cm: 12000 },
+      8: { sales: 64000, cm: 13000 },
+      9: { sales: 66000, cm: 12000 },
+    },
+    parents: {
+      KCB1: { acosPct: 8,  marginPct: 22, resiPct: 20, sales: 20000, cm: 5000 },
+      KSC:  { acosPct: 12, marginPct: 20, resiPct: 9,  sales: 12000, cm: 3000 },
+      KPH:  { acosPct: 6,  marginPct: 28, resiPct: 9,  sales: 10000, cm: 2000 },
+      KCB2: { acosPct: 5,  marginPct: 25, resiPct: 27, sales: 10000, cm: 2500 },
+      HUG:  { acosPct: 10, marginPct: 20, resiPct: 10, sales: 3000,  cm: 600 },
+      KST:  { acosPct: 10, marginPct: 20, resiPct: 10, sales: 2000,  cm: 500 },
+    },
+  },
+  fr: { // forniti dall'utente il 2026-07-16
+    overall: { marginPct: 28, acosPct: 7.5, resiPct: 7 },
+    monthly: {
+      7: { sales: 42000, cm: 9000 },
+      8: { sales: 40000, cm: 10000 },
+      9: { sales: 39000, cm: 9000 },
+    },
+    parents: {
+      KCB1: { acosPct: 7,  marginPct: 27, resiPct: 6,  sales: 25000, cm: 6000 },
+      KSC:  { acosPct: 4,  marginPct: 29, resiPct: 6,  sales: 2000,  cm: 500 },
+      KCB2: { acosPct: 6,  marginPct: 32, resiPct: 9,  sales: 6000,  cm: 1500 },
+      KST:  { acosPct: 12, marginPct: 20, resiPct: 3,  sales: 2000,  cm: 500 },
+      KPH:  { acosPct: 9,  marginPct: 22, resiPct: 4,  sales: 2000,  cm: 500 },
+      HUG:  { acosPct: 10, marginPct: 20, resiPct: 10, sales: 3000,  cm: 600 },
+    },
+  },
+  es: { // forniti dall'utente il 2026-07-16
+    overall: { marginPct: 28, acosPct: 8, resiPct: 9 },
+    monthly: {
+      7: { sales: 36000, cm: 9000 },
+      8: { sales: 38000, cm: 10000 },
+      9: { sales: 39000, cm: 9000 },
+    },
+    parents: {
+      KCB1: { acosPct: 9,  marginPct: 26, resiPct: 9,  sales: 10000, cm: 2500 },
+      HUG:  { acosPct: 10, marginPct: 20, resiPct: 7,  sales: 4000,  cm: 1000 },
+      KCB2: { acosPct: 6,  marginPct: 33, resiPct: 13, sales: 8000,  cm: 2500 },
+      KPH:  { acosPct: 9,  marginPct: 26, resiPct: 6,  sales: 7000,  cm: 2000 },
+      KSC:  { acosPct: 8,  marginPct: 23, resiPct: 6,  sales: 3000,  cm: 600 },
+      KST:  { acosPct: 9,  marginPct: 25, resiPct: 3,  sales: 2000,  cm: 500 },
+    },
+  },
+  'co.uk': { // forniti dall'utente il 2026-07-16 - solo 2 prodotti tracciati, gli altri restano neutri
+    overall: { marginPct: 26, acosPct: 9, resiPct: 6 },
+    monthly: {
+      7: { sales: 30000, cm: 8000 },
+      8: { sales: 30000, cm: 8000 },
+      9: { sales: 30000, cm: 8000 },
+    },
+    parents: {
+      KCB1: { acosPct: 11, marginPct: 20, resiPct: 10, sales: 7000,  cm: 1500 },
+      KSC:  { acosPct: 8,  marginPct: 28, resiPct: 4,  sales: 22000, cm: 6500 },
+    },
+  },
+};
+// USA e' un account separato (non un "paese" EU), quindi ha una sua costante a parte
+// con la stessa forma di COUNTRY_TARGETS - stessa dinamica (target/neutro/generico), $ invece di €.
+const USA_TARGETS = { // forniti dall'utente il 2026-07-16 - solo 4 prodotti tracciati, gli altri restano neutri
+  overall: { marginPct: 24, acosPct: 12, resiPct: 10 },
+  monthly: {
+    7: { sales: 90000, cm: 22000 },
+    8: { sales: 90000, cm: 23000 },
+    9: { sales: 90000, cm: 23000 },
+  },
+  parents: {
+    KCB1: { acosPct: 12, marginPct: 20, resiPct: 13, sales: 13000, cm: 2000 },
+    KSC:  { acosPct: 12, marginPct: 25, resiPct: 10, sales: 80000, cm: 20000 },
+    KST:  { acosPct: 12, marginPct: 15, resiPct: 7,  sales: 3000,  cm: 500 },
+    CBA:  { acosPct: 12, marginPct: 15, resiPct: 7,  sales: 3000,  cm: 500 },
+  },
+};
+function targetClass(actual, target, lowerIsBetter){
+  if (lowerIsBetter) {
+    if (actual <= target) return 'good';
+    if (actual <= target * 1.1) return 'warn';
+    return 'bad';
+  }
+  if (actual >= target) return 'good';
+  if (actual >= target * 0.9) return 'warn';
+  return 'bad';
+}
+// Durante una settimana target, un paese tracciato (countryTgt esiste) ma un prodotto
+// senza target specifico (es. UK ha solo KCB1/KSC) resta neutro: nessun colore, testo semplice.
+function pillOrPlain(cls, text){
+  return cls === null ? text : '<span class="pill '+cls+'">'+text+'</span>';
+}
+// Valore target tra parentesi accanto al valore reale - SOLO nelle settimane target attive
+// (weekCtx.active), mai altrimenti. text=null -> niente (nessun target tracciato per
+// questa metrica/paese/prodotto in questa settimana); text='ND' -> paese tracciato ma
+// questo specifico prodotto no (stato "neutro"); altrimenti il valore target formattato.
+function tgtSpan(text){
+  if (text == null) return '';
+  return ' <span class="tgt'+(text === 'ND' ? ' nd' : '')+'">('+text+')</span>';
+}
+function mon0(iso){ const d = new Date(iso + "T00:00:00Z"); return (d.getUTCDay() + 6) % 7; }
+function getWeekTargetContext(from, to){
+  const days = Math.round((new Date(to) - new Date(from)) / 86400000) + 1;
+  if (days !== 7 || mon0(from) !== 0 || mon0(to) !== 6) return { active: false };
+  const counts = {};
+  let d = from;
+  for (let i = 0; i < 7; i++) {
+    const key = d.slice(0, 7);
+    counts[key] = (counts[key] || 0) + 1;
+    d = shiftDate(d, 1);
+  }
+  const [majorityKey] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  const [y, m] = majorityKey.split('-').map(Number);
+  if (y !== 2026 || m < 7 || m > 9) return { active: false };
+  return { active: true, month: m };
+}
+
+document.getElementById('updated-tag').textContent = 'Dati aggiornati al ' + fmtDateIt(MAX_DATE) + ' (import del ' + new Date(GENERATED_AT).toLocaleString('it-IT') + ')';
+
+function recompute(){
+  const from = document.getElementById('date-from').value;
+  const to = document.getElementById('date-to').value;
+  if (!from || !to || from > to) {
+    document.getElementById('range-info').textContent = 'Intervallo non valido';
+    return;
+  }
+  const filtered = ROWS.filter(r => r[0] >= from && r[0] <= to);
+  const nDays = Math.round((new Date(to) - new Date(from)) / 86400000) + 1;
+  const weekCtx = getWeekTargetContext(from, to);
+  const monthNames = { 7: 'luglio', 8: 'agosto', 9: 'settembre' };
+  document.getElementById('range-info').textContent = fmtDateIt(from) + ' → ' + fmtDateIt(to) + ' (' + nDays + ' giorni, ' + filtered.length + ' righe)' +
+    (weekCtx.active ? ' · target Q3 attivi (' + monthNames[weekCtx.month] + ')' : '');
+
+  if (filtered.length === 0) {
+    document.getElementById('kpi-row').innerHTML = '';
+    document.getElementById('country-body').innerHTML = '';
+    document.getElementById('product-ledger').innerHTML = '';
+    document.getElementById('country-ledger').innerHTML = '<p class="empty-msg">Nessun dato nell\'intervallo selezionato.</p>';
+    document.getElementById('footnote').textContent = '';
+    return;
+  }
+
+  const euRows = filtered.filter(r => r[1] === 'EU');
+  const usaRows = filtered.filter(r => r[1] === 'USA');
+
+  const euOverallAgg = emptyAgg();
+  const byCountryAgg = {};
+  const byParentCountryAgg = {};
+  for (const r of euRows) {
+    addRow(euOverallAgg, r);
+    const mkt = r[2];
+    if (!byCountryAgg[mkt]) byCountryAgg[mkt] = emptyAgg();
+    addRow(byCountryAgg[mkt], r);
+    const parentKey = r[3] || 'UNMAPPED';
+    const key = parentKey + '|' + mkt;
+    if (!byParentCountryAgg[key]) byParentCountryAgg[key] = { parent: parentKey, marketplace: mkt, ...emptyAgg() };
+    addRow(byParentCountryAgg[key], r);
+  }
+  const euOverall = metrics(euOverallAgg);
+  const countryRows = Object.entries(byCountryAgg).filter(([,v])=>meaningful(v)).map(([mkt,v])=>({country: mkt, ...metrics(v)})).sort((a,b)=>b.sales-a.sales);
+
+  const byCountryProducts = {};
+  const byProductCountries = {};
+  const byParentAgg = {};
+  for (const row of Object.values(byParentCountryAgg)) {
+    if (!meaningful(row)) continue;
+    const name = row.parent === 'UNMAPPED' ? 'Non mappato (nuovi ASIN)' : (PARENT_NAMES[row.parent] || row.parent);
+    const dispKey = row.parent === 'UNMAPPED' ? '—' : row.parent;
+    (byCountryProducts[row.marketplace] = byCountryProducts[row.marketplace] || []).push({ name, key: dispKey, ...metrics(row) });
+    (byProductCountries[row.parent] = byProductCountries[row.parent] || []).push({ country: row.marketplace, ...metrics(row) });
+    if (!byParentAgg[row.parent]) byParentAgg[row.parent] = emptyAgg();
+    byParentAgg[row.parent].sales += row.sales; byParentAgg[row.parent].netProfit += row.netProfit;
+    byParentAgg[row.parent].adSpend += row.adSpend; byParentAgg[row.parent].refunds += row.refunds; byParentAgg[row.parent].units += row.units;
+  }
+  Object.values(byCountryProducts).forEach(list => list.sort((a,b) => b.sales - a.sales));
+  Object.values(byProductCountries).forEach(list => list.sort((a,b) => b.sales - a.sales));
+  const euParentTotals = Object.entries(byParentAgg).filter(([,v])=>meaningful(v)).map(([key,v]) => ({
+    key: key === 'UNMAPPED' ? '—' : key,
+    name: key === 'UNMAPPED' ? 'Non mappato (nuovi ASIN)' : (PARENT_NAMES[key] || key),
+    countries: byProductCountries[key] || [],
+    ...metrics(v),
+  })).sort((a,b)=>b.sales-a.sales);
+
+  const usaOverallAgg = emptyAgg();
+  const usaByParentAgg = {};
+  for (const r of usaRows) {
+    addRow(usaOverallAgg, r);
+    const parentKey = r[3] || 'UNMAPPED';
+    if (!usaByParentAgg[parentKey]) usaByParentAgg[parentKey] = emptyAgg();
+    addRow(usaByParentAgg[parentKey], r);
+  }
+  const usaOverall = metrics(usaOverallAgg);
+  const usaProducts = Object.entries(usaByParentAgg).filter(([,v])=>meaningful(v)).map(([key,v]) => ({
+    key: key === 'UNMAPPED' ? '—' : key,
+    name: key === 'UNMAPPED' ? 'Non mappato (nuovi ASIN)' : (PARENT_NAMES[key] || key),
+    ...metrics(v),
+  })).sort((a,b)=>b.sales-a.sales);
+  const usaByKey = new Map(usaProducts.map(p => [p.key, p]));
+
+  render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx);
+}
+
+function kpiTile(label, value, cls){
+  return '<div class="kpi"><span class="lbl">'+label+'</span><span class="val'+(cls?' '+cls:'')+'">'+value+'</span></div>';
+}
+
+function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx){
+  document.getElementById('kpi-row').innerHTML = [
+    kpiTile('Sales', fmtEUR(euOverall.sales)),
+    kpiTile('Net profit', fmtEUR(euOverall.netProfit), euOverall.netProfit<0 ? 'neg' : ''),
+    kpiTile('Margin', fmtPct(euOverall.marginPct)),
+    kpiTile('Acos', fmtPct(euOverall.acosPct)),
+    kpiTile('Refund', fmtPct(euOverall.resiPct)),
+  ].join('');
+
+  const euCountryRowsHtml = countryRows.map(r => {
+    const countryTgt = COUNTRY_TARGETS[r.country];
+    const useTarget = weekCtx.active && countryTgt;
+    const monthTgt = useTarget ? countryTgt.monthly[weekCtx.month] : null;
+    const salesHtml = (useTarget ? '<span class="pill '+targetClass(r.sales, monthTgt.sales, false)+'">'+fmtEUR(r.sales)+'</span>' : fmtEUR(r.sales)) + (useTarget ? tgtSpan(fmtEUR(monthTgt.sales)) : '');
+    const cmHtml = (useTarget ? '<span class="pill '+targetClass(r.netProfit, monthTgt.cm, false)+'">'+fmtEUR(r.netProfit)+'</span>' : fmtEUR(r.netProfit)) + (useTarget ? tgtSpan(fmtEUR(monthTgt.cm)) : '');
+    const mCls = useTarget ? targetClass(r.marginPct, countryTgt.overall.marginPct, false) : marginClass(r.marginPct);
+    const aCls = useTarget ? targetClass(r.acosPct, countryTgt.overall.acosPct, true) : acosClass(r.acosPct);
+    const rCls = useTarget ? targetClass(r.resiPct, countryTgt.overall.resiPct, true) : resiClass(r.resiPct);
+    return (
+      '<tr>'+
+      '<td class="country-name">'+r.country+'</td>'+
+      '<td class="mono">'+salesHtml+'</td>'+
+      '<td class="mono">'+fmtUnits(r.units)+'</td>'+
+      '<td class="mono'+(!useTarget && r.netProfit<0?' neg':'')+'">'+cmHtml+'</td>'+
+      '<td><span class="pill '+mCls+'">'+fmtPct(r.marginPct)+'</span>'+(useTarget?tgtSpan(fmtPct(countryTgt.overall.marginPct)):'')+'</td>'+
+      '<td><span class="pill '+aCls+'">'+fmtPct(r.acosPct)+'</span>'+(useTarget?tgtSpan(fmtPct(countryTgt.overall.acosPct)):'')+'</td>'+
+      '<td><span class="pill '+rCls+'">'+fmtPct(r.resiPct)+'</span>'+(useTarget?tgtSpan(fmtPct(countryTgt.overall.resiPct)):'')+'</td>'+
+      '</tr>'
+    );
+  }).join('');
+
+  const useUsaTarget = weekCtx.active;
+  const usaMonthTgt = useUsaTarget ? USA_TARGETS.monthly[weekCtx.month] : null;
+  const usaSalesHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaOverall.sales, usaMonthTgt.sales, false)+'">'+fmtUSD(usaOverall.sales)+'</span>' : fmtUSD(usaOverall.sales)) + (useUsaTarget ? tgtSpan(fmtUSD(usaMonthTgt.sales)) : '');
+  const usaCmHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaOverall.netProfit, usaMonthTgt.cm, false)+'">'+fmtUSD(usaOverall.netProfit)+'</span>' : fmtUSD(usaOverall.netProfit)) + (useUsaTarget ? tgtSpan(fmtUSD(usaMonthTgt.cm)) : '');
+  const usaMCls = useUsaTarget ? targetClass(usaOverall.marginPct, USA_TARGETS.overall.marginPct, false) : marginClass(usaOverall.marginPct);
+  const usaACls = useUsaTarget ? targetClass(usaOverall.acosPct, USA_TARGETS.overall.acosPct, true) : acosClass(usaOverall.acosPct);
+  const usaRCls = useUsaTarget ? targetClass(usaOverall.resiPct, USA_TARGETS.overall.resiPct, true) : resiClass(usaOverall.resiPct);
+  const usaSalesStat = useUsaTarget ? '<span class="stat">Sales '+usaSalesHtml+'</span>' : '<span class="stat">Sales <b class="mono">'+fmtUSD(usaOverall.sales)+'</b></span>';
+  const usaCmStat = useUsaTarget ? '<span class="stat">CM '+usaCmHtml+'</span>' : '<span class="stat">CM <b class="mono'+(usaOverall.netProfit<0?' neg':'')+'">'+fmtUSD(usaOverall.netProfit)+'</b></span>';
+  const usaRowHtml =
+    '<tr class="sep-row"><td colspan="7"><span class="sep-label"><i class="ti ti-flag-3" aria-hidden="true"></i>Altri account (non incluso sopra)</span></td></tr>'+
+    '<tr class="usa-row">'+
+    '<td class="country-name">Usa<span class="acct-tag"><i class="ti ti-flag-3" aria-hidden="true"></i>usa</span></td>'+
+    '<td class="mono">'+usaSalesHtml+'</td>'+
+    '<td class="mono">'+fmtUnits(usaOverall.units)+'</td>'+
+    '<td class="mono'+(!useUsaTarget && usaOverall.netProfit<0?' neg':'')+'">'+usaCmHtml+'</td>'+
+    '<td><span class="pill '+usaMCls+'">'+fmtPct(usaOverall.marginPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.marginPct)):'')+'</td>'+
+    '<td><span class="pill '+usaACls+'">'+fmtPct(usaOverall.acosPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.acosPct)):'')+'</td>'+
+    '<td><span class="pill '+usaRCls+'">'+fmtPct(usaOverall.resiPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.resiPct)):'')+'</td>'+
+    '</tr>';
+
+  document.getElementById('country-body').innerHTML = euCountryRowsHtml + usaRowHtml;
+
+  const productLedgerHtml = euParentTotals.map(p => {
+    const usaRow = usaByKey.get(p.key);
+    const rows = p.countries.map(c => {
+      const countryTgt = COUNTRY_TARGETS[c.country];
+      const parentTgt = countryTgt && countryTgt.parents[p.key];
+      const useTarget = weekCtx.active && parentTgt;
+      const useNeutral = weekCtx.active && countryTgt && !parentTgt;
+      const salesTgt = useTarget ? fmtEUR(parentTgt.sales) : (useNeutral ? 'ND' : null);
+      const cmTgt = useTarget ? fmtEUR(parentTgt.cm) : (useNeutral ? 'ND' : null);
+      const mTgt = useTarget ? fmtPct(parentTgt.marginPct) : (useNeutral ? 'ND' : null);
+      const aTgt = useTarget ? fmtPct(parentTgt.acosPct) : (useNeutral ? 'ND' : null);
+      const rTgt = useTarget ? fmtPct(parentTgt.resiPct) : (useNeutral ? 'ND' : null);
+      const salesHtml = (useTarget ? '<span class="pill '+targetClass(c.sales, parentTgt.sales, false)+'">'+fmtEUR(c.sales)+'</span>' : fmtEUR(c.sales)) + tgtSpan(salesTgt);
+      const cmHtml = (useTarget ? '<span class="pill '+targetClass(c.netProfit, parentTgt.cm, false)+'">'+fmtEUR(c.netProfit)+'</span>' : fmtEUR(c.netProfit)) + tgtSpan(cmTgt);
+      const mCls = useTarget ? targetClass(c.marginPct, parentTgt.marginPct, false) : (useNeutral ? null : marginClass(c.marginPct));
+      const aCls = useTarget ? targetClass(c.acosPct, parentTgt.acosPct, true) : (useNeutral ? null : acosClass(c.acosPct));
+      const rCls = useTarget ? targetClass(c.resiPct, parentTgt.resiPct, true) : (useNeutral ? null : resiClass(c.resiPct));
+      return (
+        '<tr>'+
+        '<td class="country-name">'+c.country+'</td>'+
+        '<td class="mono">'+salesHtml+'</td>'+
+        '<td class="mono">'+fmtUnits(c.units)+'</td>'+
+        '<td class="mono'+(!useTarget && c.netProfit<0?' neg':'')+'">'+cmHtml+'</td>'+
+        '<td>'+pillOrPlain(mCls, fmtPct(c.marginPct))+tgtSpan(mTgt)+'</td>'+
+        '<td>'+pillOrPlain(aCls, fmtPct(c.acosPct))+tgtSpan(aTgt)+'</td>'+
+        '<td class="mono">'+fmtEUR(c.adSpend)+'</td>'+
+        '<td>'+pillOrPlain(rCls, fmtPct(c.resiPct))+tgtSpan(rTgt)+'</td>'+
+        '</tr>'
+      );
+    }).join('') + (usaRow ? (() => {
+      const usaParentTgt = USA_TARGETS.parents[p.key];
+      const useUsaTarget = weekCtx.active && usaParentTgt;
+      const useUsaNeutral = weekCtx.active && !usaParentTgt;
+      const usaSalesTgt = useUsaTarget ? fmtUSD(usaParentTgt.sales) : (useUsaNeutral ? 'ND' : null);
+      const usaCmTgt = useUsaTarget ? fmtUSD(usaParentTgt.cm) : (useUsaNeutral ? 'ND' : null);
+      const usaMTgt = useUsaTarget ? fmtPct(usaParentTgt.marginPct) : (useUsaNeutral ? 'ND' : null);
+      const usaATgt = useUsaTarget ? fmtPct(usaParentTgt.acosPct) : (useUsaNeutral ? 'ND' : null);
+      const usaRTgt = useUsaTarget ? fmtPct(usaParentTgt.resiPct) : (useUsaNeutral ? 'ND' : null);
+      const usaSalesHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaRow.sales, usaParentTgt.sales, false)+'">'+fmtUSD(usaRow.sales)+'</span>' : fmtUSD(usaRow.sales)) + tgtSpan(usaSalesTgt);
+      const usaCmHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaRow.netProfit, usaParentTgt.cm, false)+'">'+fmtUSD(usaRow.netProfit)+'</span>' : fmtUSD(usaRow.netProfit)) + tgtSpan(usaCmTgt);
+      const usaMCls = useUsaTarget ? targetClass(usaRow.marginPct, usaParentTgt.marginPct, false) : (useUsaNeutral ? null : marginClass(usaRow.marginPct));
+      const usaACls = useUsaTarget ? targetClass(usaRow.acosPct, usaParentTgt.acosPct, true) : (useUsaNeutral ? null : acosClass(usaRow.acosPct));
+      const usaRCls = useUsaTarget ? targetClass(usaRow.resiPct, usaParentTgt.resiPct, true) : (useUsaNeutral ? null : resiClass(usaRow.resiPct));
+      return (
+        '<tr class="sep-row"><td colspan="8"><span class="sep-label"><i class="ti ti-flag-3" aria-hidden="true"></i>Altri account</span></td></tr>'+
+        '<tr class="usa-row">'+
+        '<td class="country-name">Usa<span class="acct-tag"><i class="ti ti-flag-3" aria-hidden="true"></i>usa</span></td>'+
+        '<td class="mono">'+usaSalesHtml+'</td>'+
+        '<td class="mono">'+fmtUnits(usaRow.units)+'</td>'+
+        '<td class="mono'+(!useUsaTarget && usaRow.netProfit<0?' neg':'')+'">'+usaCmHtml+'</td>'+
+        '<td>'+pillOrPlain(usaMCls, fmtPct(usaRow.marginPct))+tgtSpan(usaMTgt)+'</td>'+
+        '<td>'+pillOrPlain(usaACls, fmtPct(usaRow.acosPct))+tgtSpan(usaATgt)+'</td>'+
+        '<td class="mono">'+fmtUSD(usaRow.adSpend)+'</td>'+
+        '<td>'+pillOrPlain(usaRCls, fmtPct(usaRow.resiPct))+tgtSpan(usaRTgt)+'</td>'+
+        '</tr>'
+      );
+    })() : '');
+    return (
+      '<details>'+
+        '<summary>'+
+          '<i class="ti ti-chevron-right car" aria-hidden="true"></i>'+
+          '<span class="pname mono">'+(p.key !== '—' ? p.key : 'Non mappato')+'</span>'+
+          '<span class="ptag">'+p.countries.length+' paesi'+(usaRow?' + usa':'')+'</span>'+
+          '<span class="chips">'+
+            '<span class="pill '+acosClass(p.acosPct)+'">Acos '+fmtPct(p.acosPct)+'</span>'+
+            '<span class="pill '+marginClass(p.marginPct)+'">Margin '+fmtPct(p.marginPct)+'</span>'+
+            '<span class="pill '+resiClass(p.resiPct)+'">Refund '+fmtPct(p.resiPct)+'</span>'+
+            '<span class="stat">Units <b class="mono">'+fmtUnits(p.units)+'</b></span>'+
+            '<span class="stat">Sales <b class="mono">'+fmtEUR(p.sales)+'</b></span>'+
+            '<span class="stat">Adv <b class="mono">'+fmtEUR(p.adSpend)+'</b></span>'+
+            '<span class="stat">CM <b class="mono'+(p.netProfit<0?' neg':'')+'">'+fmtEUR(p.netProfit)+'</b></span>'+
+          '</span>'+
+        '</summary>'+
+        '<div class="detail-body"><div class="tblwrap">'+
+          '<table><thead><tr>'+
+            '<th>Paese</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
+          '</tr></thead><tbody>'+rows+'</tbody></table>'+
+        '</div></div>'+
+      '</details>'
+    );
+  }).join('');
+
+  document.getElementById('product-ledger').innerHTML = productLedgerHtml;
+
+  const ledgerHtml = countryRows.map(r => {
+    const products = byCountryProducts[r.country] || [];
+    const adSpend = r.sales > 0 ? Math.round(r.sales * r.acosPct / 100) : products.reduce((s,x)=>s+x.adSpend,0);
+    const countryTgt = COUNTRY_TARGETS[r.country];
+    const rows = products.map(c => {
+      const parentTgt = countryTgt && countryTgt.parents[c.key];
+      const useTarget = weekCtx.active && parentTgt;
+      const useNeutral = weekCtx.active && countryTgt && !parentTgt;
+      const salesTgt = useTarget ? fmtEUR(parentTgt.sales) : (useNeutral ? 'ND' : null);
+      const cmTgt = useTarget ? fmtEUR(parentTgt.cm) : (useNeutral ? 'ND' : null);
+      const mTgt = useTarget ? fmtPct(parentTgt.marginPct) : (useNeutral ? 'ND' : null);
+      const aTgt = useTarget ? fmtPct(parentTgt.acosPct) : (useNeutral ? 'ND' : null);
+      const rTgt = useTarget ? fmtPct(parentTgt.resiPct) : (useNeutral ? 'ND' : null);
+      const salesHtml = (useTarget ? '<span class="pill '+targetClass(c.sales, parentTgt.sales, false)+'">'+fmtEUR(c.sales)+'</span>' : fmtEUR(c.sales)) + tgtSpan(salesTgt);
+      const cmHtml = (useTarget ? '<span class="pill '+targetClass(c.netProfit, parentTgt.cm, false)+'">'+fmtEUR(c.netProfit)+'</span>' : fmtEUR(c.netProfit)) + tgtSpan(cmTgt);
+      const mCls = useTarget ? targetClass(c.marginPct, parentTgt.marginPct, false) : (useNeutral ? null : marginClass(c.marginPct));
+      const aCls = useTarget ? targetClass(c.acosPct, parentTgt.acosPct, true) : (useNeutral ? null : acosClass(c.acosPct));
+      const rCls = useTarget ? targetClass(c.resiPct, parentTgt.resiPct, true) : (useNeutral ? null : resiClass(c.resiPct));
+      return (
+        '<tr>'+
+        '<td class="mono">'+(c.key !== '—' ? c.key : 'Non mappato')+'</td>'+
+        '<td class="mono">'+salesHtml+'</td>'+
+        '<td class="mono">'+fmtUnits(c.units)+'</td>'+
+        '<td class="mono'+(!useTarget && c.netProfit<0?' neg':'')+'">'+cmHtml+'</td>'+
+        '<td>'+pillOrPlain(mCls, fmtPct(c.marginPct))+tgtSpan(mTgt)+'</td>'+
+        '<td>'+pillOrPlain(aCls, fmtPct(c.acosPct))+tgtSpan(aTgt)+'</td>'+
+        '<td class="mono">'+fmtEUR(c.adSpend)+'</td>'+
+        '<td>'+pillOrPlain(rCls, fmtPct(c.resiPct))+tgtSpan(rTgt)+'</td>'+
+        '</tr>'
+      );
+    }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--ink-3);font-family:var(--sans);">nessun prodotto mappato per questo paese</td></tr>';
+    const useSumTarget = weekCtx.active && countryTgt;
+    const sumMonthTgt = useSumTarget ? countryTgt.monthly[weekCtx.month] : null;
+    const sumACls = useSumTarget ? targetClass(r.acosPct, countryTgt.overall.acosPct, true) : acosClass(r.acosPct);
+    const sumMCls = useSumTarget ? targetClass(r.marginPct, countryTgt.overall.marginPct, false) : marginClass(r.marginPct);
+    const sumRCls = useSumTarget ? targetClass(r.resiPct, countryTgt.overall.resiPct, true) : resiClass(r.resiPct);
+    const sumSalesStat = useSumTarget
+      ? '<span class="stat">Sales <span class="pill '+targetClass(r.sales, sumMonthTgt.sales, false)+'">'+fmtEUR(r.sales)+'</span>'+tgtSpan(fmtEUR(sumMonthTgt.sales))+'</span>'
+      : '<span class="stat">Sales <b class="mono">'+fmtEUR(r.sales)+'</b></span>';
+    const sumCmStat = useSumTarget
+      ? '<span class="stat">CM <span class="pill '+targetClass(r.netProfit, sumMonthTgt.cm, false)+'">'+fmtEUR(r.netProfit)+'</span>'+tgtSpan(fmtEUR(sumMonthTgt.cm))+'</span>'
+      : '<span class="stat">CM <b class="mono'+(r.netProfit<0?' neg':'')+'">'+fmtEUR(r.netProfit)+'</b></span>';
+    return (
+      '<details>'+
+        '<summary>'+
+          '<i class="ti ti-chevron-right car" aria-hidden="true"></i>'+
+          '<span class="pname country-name">'+r.country+'</span>'+
+          '<span class="ptag">'+products.length+' prodotti</span>'+
+          '<span class="chips">'+
+            '<span class="pill '+sumACls+'">Acos '+fmtPct(r.acosPct)+'</span>'+(useSumTarget?tgtSpan(fmtPct(countryTgt.overall.acosPct)):'')+
+            '<span class="pill '+sumMCls+'">Margin '+fmtPct(r.marginPct)+'</span>'+(useSumTarget?tgtSpan(fmtPct(countryTgt.overall.marginPct)):'')+
+            '<span class="pill '+sumRCls+'">Refund '+fmtPct(r.resiPct)+'</span>'+(useSumTarget?tgtSpan(fmtPct(countryTgt.overall.resiPct)):'')+
+            '<span class="stat">Units <b class="mono">'+fmtUnits(r.units)+'</b></span>'+
+            sumSalesStat+
+            '<span class="stat">Adv <b class="mono">'+fmtEUR(adSpend)+'</b></span>'+
+            sumCmStat+
+          '</span>'+
+        '</summary>'+
+        '<div class="detail-body"><div class="tblwrap">'+
+          '<table><thead><tr>'+
+            '<th>Prodotto</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
+          '</tr></thead><tbody>'+rows+'</tbody></table>'+
+        '</div></div>'+
+      '</details>'
+    );
+  }).join('') + (
+    '<p class="sec-note prose" style="margin:2px 0;">Altri account (non inclusi nei totali EU)</p>'+
+    '<details class="other-account">'+
+      '<summary>'+
+        '<i class="ti ti-chevron-right car" aria-hidden="true"></i>'+
+        '<span class="pname country-name">Usa<span class="acct-tag"><i class="ti ti-flag-3" aria-hidden="true"></i>usa</span></span>'+
+        '<span class="ptag">'+usaProducts.length+' prodotti</span>'+
+        '<span class="chips">'+
+          '<span class="pill '+usaACls+'">Acos '+fmtPct(usaOverall.acosPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.acosPct)):'')+
+          '<span class="pill '+usaMCls+'">Margin '+fmtPct(usaOverall.marginPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.marginPct)):'')+
+          '<span class="pill '+usaRCls+'">Refund '+fmtPct(usaOverall.resiPct)+'</span>'+(useUsaTarget?tgtSpan(fmtPct(USA_TARGETS.overall.resiPct)):'')+
+          '<span class="stat">Units <b class="mono">'+fmtUnits(usaOverall.units)+'</b></span>'+
+          usaSalesStat+
+          '<span class="stat">Adv <b class="mono">'+fmtUSD(usaOverall.adSpend)+'</b></span>'+
+          usaCmStat+
+        '</span>'+
+      '</summary>'+
+      '<div class="detail-body"><div class="tblwrap">'+
+        '<table><thead><tr>'+
+          '<th>Prodotto</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
+        '</tr></thead><tbody>'+
+        usaProducts.map(p => {
+          const pTgt = USA_TARGETS.parents[p.key];
+          const pUseTarget = weekCtx.active && pTgt;
+          const pUseNeutral = weekCtx.active && !pTgt;
+          const pSalesTgt = pUseTarget ? fmtUSD(pTgt.sales) : (pUseNeutral ? 'ND' : null);
+          const pCmTgt = pUseTarget ? fmtUSD(pTgt.cm) : (pUseNeutral ? 'ND' : null);
+          const pMTgt = pUseTarget ? fmtPct(pTgt.marginPct) : (pUseNeutral ? 'ND' : null);
+          const pATgt = pUseTarget ? fmtPct(pTgt.acosPct) : (pUseNeutral ? 'ND' : null);
+          const pRTgt = pUseTarget ? fmtPct(pTgt.resiPct) : (pUseNeutral ? 'ND' : null);
+          const pSalesHtml = (pUseTarget ? '<span class="pill '+targetClass(p.sales, pTgt.sales, false)+'">'+fmtUSD(p.sales)+'</span>' : fmtUSD(p.sales)) + tgtSpan(pSalesTgt);
+          const pCmHtml = (pUseTarget ? '<span class="pill '+targetClass(p.netProfit, pTgt.cm, false)+'">'+fmtUSD(p.netProfit)+'</span>' : fmtUSD(p.netProfit)) + tgtSpan(pCmTgt);
+          const pMCls = pUseTarget ? targetClass(p.marginPct, pTgt.marginPct, false) : (pUseNeutral ? null : marginClass(p.marginPct));
+          const pACls = pUseTarget ? targetClass(p.acosPct, pTgt.acosPct, true) : (pUseNeutral ? null : acosClass(p.acosPct));
+          const pRCls = pUseTarget ? targetClass(p.resiPct, pTgt.resiPct, true) : (pUseNeutral ? null : resiClass(p.resiPct));
+          return (
+            '<tr>'+
+            '<td class="mono">'+(p.key !== '—' ? p.key : 'Non mappato')+'</td>'+
+            '<td class="mono">'+pSalesHtml+'</td>'+
+            '<td class="mono">'+fmtUnits(p.units)+'</td>'+
+            '<td class="mono'+(!pUseTarget && p.netProfit<0?' neg':'')+'">'+pCmHtml+'</td>'+
+            '<td>'+pillOrPlain(pMCls, fmtPct(p.marginPct))+tgtSpan(pMTgt)+'</td>'+
+            '<td>'+pillOrPlain(pACls, fmtPct(p.acosPct))+tgtSpan(pATgt)+'</td>'+
+            '<td class="mono">'+fmtUSD(p.adSpend)+'</td>'+
+            '<td>'+pillOrPlain(pRCls, fmtPct(p.resiPct))+tgtSpan(pRTgt)+'</td>'+
+            '</tr>'
+          );
+        }).join('')+
+        '</tbody></table>'+
+      '</div></div>'+
+    '</details>'
+  );
+
+  document.getElementById('country-ledger').innerHTML = ledgerHtml;
+
+  document.getElementById('footnote').innerHTML =
+    'CM (contribution margin) = Net profit sellerboard. Acos e Refund% pesati sulle vendite/unità della riga, non media semplice tra i giorni. ' +
+    'Raggruppamento "parent" costruito a mano da ASIN &rarr; linea prodotto. Eventuali ASIN non ancora mappati appaiono come riga "Non mappato (nuovi ASIN)" per paese, contati comunque nei totali. ' +
+    'Dati disponibili dal ' + fmtDateIt(MIN_DATE) + ' al ' + fmtDateIt(MAX_DATE) + '. ' +
+    'Usa è un account sellerboard separato dall\'EU: sempre segnalato in arancio, con bordo squadrato per distinguerlo anche senza colore, mostrato in $, escluso dalla riga KPI in alto che resta EU-only.';
+}
+
+function setRange(from, to){
+  document.getElementById('date-from').value = from;
+  document.getElementById('date-to').value = to;
+  recompute();
+}
+
+const presets = [
+  { label: 'Ieri', fn: () => setRange(MAX_DATE, MAX_DATE) },
+  { label: 'Ultimi 3 giorni', fn: () => setRange(shiftDate(MAX_DATE, -2), MAX_DATE) },
+  { label: 'Ultimi 7 giorni', fn: () => setRange(shiftDate(MAX_DATE, -6), MAX_DATE) },
+  { label: 'Ultimi 14 giorni', fn: () => setRange(shiftDate(MAX_DATE, -13), MAX_DATE) },
+  { label: 'Ultimi 30 giorni', fn: () => setRange(shiftDate(MAX_DATE, -29), MAX_DATE) },
+  { label: 'Da inizio mese', fn: () => setRange(startOfMonth(MAX_DATE), MAX_DATE) },
+  { label: 'Ultimi 3 mesi', fn: () => setRange(shiftMonths(MAX_DATE, -3), MAX_DATE) },
+  { label: 'Da inizio anno', fn: () => setRange(startOfYear(MAX_DATE), MAX_DATE) },
+  { label: 'Tutto il periodo', fn: () => setRange(MIN_DATE, MAX_DATE) },
+];
+document.getElementById('presets').innerHTML = presets.map((p,i) => '<button type="button" data-i="'+i+'">'+p.label+'</button>').join('');
+document.getElementById('presets').querySelectorAll('button').forEach((btn,i) => btn.addEventListener('click', presets[i].fn));
+
+const fromInput = document.getElementById('date-from');
+const toInput = document.getElementById('date-to');
+fromInput.min = MIN_DATE; fromInput.max = MAX_DATE;
+toInput.min = MIN_DATE; toInput.max = MAX_DATE;
+fromInput.addEventListener('change', recompute);
+toInput.addEventListener('change', recompute);
+
+setRange(shiftDate(MAX_DATE, -6), MAX_DATE);
+</script>

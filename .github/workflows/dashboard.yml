@@ -1,0 +1,41 @@
+name: Aggiorna dashboard KCB
+
+on:
+  schedule:
+    # 09:15 UTC = 10:15 CET (inverno) / 11:15 CEST (estate) — dopo la chiusura
+    # della giornata USA, che localmente non si stabilizza prima delle ~9:40.
+    - cron: '15 9 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installa dipendenze
+        run: npm install axios csv-parse
+
+      - name: Scarica nuovi dati sellerboard (solo report Prodotti)
+        run: node scripts/cloud_import.mjs
+        env:
+          EU_PRODUCTS_URL: ${{ secrets.EU_PRODUCTS_URL }}
+          US_PRODUCTS_URL: ${{ secrets.US_PRODUCTS_URL }}
+
+      - name: Ricostruisci la dashboard
+        run: node scripts/cloud_build.mjs
+
+      - name: Commit e push se ci sono cambiamenti
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/history.json docs/index.html
+          git diff --staged --quiet || git commit -m "Aggiornamento dati $(date -u +%Y-%m-%d)"
+          git push
