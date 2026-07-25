@@ -38,24 +38,15 @@ function toISO(ddmmyyyy) {
   const [d, m, y] = ddmmyyyy.split("/");
   return `${y}-${m}-${d}`;
 }
-function shiftISO(iso, days) {
-  const d = new Date(iso + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 async function main() {
-  const history = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
-  // key -> indice in history, per poter sovrascrivere in-place la giornata ancora aperta
-  // (chiamato piu' volte al giorno: i giorni passati sono definitivi e si saltano se gia'
-  // visti, il giorno piu' recente del batch invece si aggiorna sempre, perche' sellerboard
-  // rivede i numeri di oggi man mano che arrivano nuovi ordini/resi).
-  const index = new Map();
-  history.forEach((r, i) => index.set(r[1] + "|" + r[0] + "|" + r[2] + "|" + r[3], i));
+  const historyRaw = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
+  // Record piu' vecchi (prima della fix SKU) avevano 9 campi: normalizza a 10 (sku vuoto,
+  // non recuperabile retroattivamente) cosi' la destrutturazione in cloud_build.mjs resta
+  // sempre allineata.
+  let history = historyRaw.map((r) => r.length === 9 ? [r[0], r[1], r[2], r[3], "", r[4], r[5], r[6], r[7], r[8]] : r);
 
-  const REFRESH_DAYS = 7; // sellerboard rivede resi/costi con qualche giorno di ritardo:
-  // ri-scriviamo sempre gli ultimi 7 giorni, non solo il giorno corrente.
-  let totalNew = 0, totalUpdated = 0;
+  let totalRemoved = 0, totalInserted = 0;
 
   for (const acc of ACCOUNTS) {
     if (!acc.url) { console.log(`[${acc.key}] nessun URL configurato, salto`); continue; }
@@ -65,48 +56,44 @@ async function main() {
 
       const dateCol = findCol(parsedRows[0] || {}, ["date", "data", "day", "period"]);
       const asinCol = findCol(parsedRows[0] || {}, ["asin"]);
+      const skuCol = findCol(parsedRows[0] || {}, ["sku"]);
       const mktCol = findCol(parsedRows[0] || {}, ["marketplace", "country"]);
 
-      let maxDateInBatch = null;
+      // Il report "Dashboard by product" restituisce sempre l'intera finestra scorrevole
+      // (~30 giorni), rivista giorno per giorno da sellerboard. Invece di aggiornare riga
+      // per riga (rischio di lasciare in giro righe "orfane" se una chiave cambia forma,
+      // come e' successo passando da 9 a 10 campi), sostituiamo in blocco TUTTI i giorni
+      // presenti nel batch fresco per quell'account, poi reinseriamo tutte le righe fresche.
+      // I giorni piu' vecchi della finestra (fuori da questo batch) restano intatti.
+      const datesInBatch = new Set();
       for (const row of parsedRows) {
         const rawDate = row[dateCol] || "";
-        if (!rawDate) continue;
-        const iso = toISO(rawDate);
-        if (!maxDateInBatch || iso > maxDateInBatch) maxDateInBatch = iso;
+        if (rawDate) datesInBatch.add(toISO(rawDate));
       }
-      const refreshCutoff = maxDateInBatch ? shiftISO(maxDateInBatch, -(REFRESH_DAYS - 1)) : null;
 
-      let inserted = 0, updated = 0;
+      const before = history.length;
+      history = history.filter((r) => !(r[1] === acc.key && datesInBatch.has(r[0])));
+      const removed = before - history.length;
+
+      let inserted = 0;
       for (const row of parsedRows) {
         const rawDate = row[dateCol] || "";
         const asin = row[asinCol] || "";
         if (!rawDate || !asin) continue;
         const iso = toISO(rawDate);
+        const sku = row[skuCol] || "";
         const marketplace = (row[mktCol] || acc.defaultMarketplace).replace("Amazon.", "");
-        const dedupeKey = acc.key + "|" + iso + "|" + marketplace + "|" + asin;
-        const inRefreshWindow = refreshCutoff !== null && iso >= refreshCutoff;
-
-        const existingIdx = index.get(dedupeKey);
-        if (existingIdx !== undefined && !inRefreshWindow) continue; // giorno vecchio e gia' registrato: niente da fare
-
         const sales = num(row["SalesOrganic"]) + num(row["SalesPPC"]);
         const netProfit = num(row["NetProfit"]);
         const adSpend = Math.abs(num(row["Ads spend"]));
         const refunds = num(row["Refunds"]);
         const units = (parseInt(row["UnitsOrganic"]) || 0) + (parseInt(row["UnitsPPC"]) || 0);
-        const record = [iso, acc.key, marketplace, asin, sales, netProfit, adSpend, refunds, units];
-
-        if (existingIdx !== undefined) {
-          history[existingIdx] = record; // dentro la finestra degli ultimi 7 giorni: sovrascrivi con i numeri rivisti
-          updated++;
-        } else {
-          index.set(dedupeKey, history.length);
-          history.push(record);
-          inserted++;
-        }
+        history.push([iso, acc.key, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units]);
+        inserted++;
       }
-      totalNew += inserted; totalUpdated += updated;
-      console.log(`[${acc.key}] Prodotti: ${inserted} nuovi record, ${updated} aggiornati (finestra rifresh: ${refreshCutoff} -> ${maxDateInBatch})`);
+      totalRemoved += removed; totalInserted += inserted;
+      const sortedDates = [...datesInBatch].sort();
+      console.log(`[${acc.key}] Prodotti: sostituita finestra ${sortedDates[0]} -> ${sortedDates[sortedDates.length - 1]} (rimosse ${removed} righe vecchie, reinserite ${inserted} righe fresche)`);
     } catch (e) {
       console.error(`[${acc.key}] ERRORE: ${e.message}`);
       process.exitCode = 1;
@@ -114,7 +101,7 @@ async function main() {
   }
 
   fs.writeFileSync(HISTORY_FILE, JSON.stringify(history));
-  console.log("Totale righe storiche:", history.length, "(nuove:", totalNew, "aggiornate:", totalUpdated + ")");
+  console.log("Totale righe storiche:", history.length, "(rimosse:", totalRemoved, "reinserite:", totalInserted + ")");
 }
 
 main().catch((e) => { console.error("FATAL:", e); process.exit(1); });

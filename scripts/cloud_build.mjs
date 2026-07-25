@@ -48,7 +48,7 @@ function main() {
   for (const [iso, accKey, , netProfit] of pnl) pnlByKey.set(accKey + "|" + iso, netProfit);
 
   const productsSumByKey = new Map();
-  for (const [iso, accKey, , , , netProfit] of history) {
+  for (const [iso, accKey, , , , , netProfit] of history) {
     const key = accKey + "|" + iso;
     productsSumByKey.set(key, (productsSumByKey.get(key) || 0) + netProfit);
   }
@@ -63,7 +63,7 @@ function main() {
   const rows = [];
   let minDate = null, maxDate = null;
   let calibratedDays = new Set();
-  for (const [iso, accKey, marketplace, asin, sales, netProfit, adSpend, refunds, units] of history) {
+  for (const [iso, accKey, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units] of history) {
     if (!minDate || iso < minDate) minDate = iso;
     if (!maxDate || iso > maxDate) maxDate = iso;
     const parent = ASIN_TO_PARENT[asin] || null;
