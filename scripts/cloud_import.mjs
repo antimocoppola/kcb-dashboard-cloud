@@ -38,6 +38,11 @@ function toISO(ddmmyyyy) {
   const [d, m, y] = ddmmyyyy.split("/");
   return `${y}-${m}-${d}`;
 }
+function shiftISO(iso, days) {
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
 
 async function main() {
   const history = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
@@ -48,6 +53,8 @@ async function main() {
   const index = new Map();
   history.forEach((r, i) => index.set(r[1] + "|" + r[0] + "|" + r[2] + "|" + r[3], i));
 
+  const REFRESH_DAYS = 7; // sellerboard rivede resi/costi con qualche giorno di ritardo:
+  // ri-scriviamo sempre gli ultimi 7 giorni, non solo il giorno corrente.
   let totalNew = 0, totalUpdated = 0;
 
   for (const acc of ACCOUNTS) {
@@ -67,6 +74,7 @@ async function main() {
         const iso = toISO(rawDate);
         if (!maxDateInBatch || iso > maxDateInBatch) maxDateInBatch = iso;
       }
+      const refreshCutoff = maxDateInBatch ? shiftISO(maxDateInBatch, -(REFRESH_DAYS - 1)) : null;
 
       let inserted = 0, updated = 0;
       for (const row of parsedRows) {
@@ -76,10 +84,10 @@ async function main() {
         const iso = toISO(rawDate);
         const marketplace = (row[mktCol] || acc.defaultMarketplace).replace("Amazon.", "");
         const dedupeKey = acc.key + "|" + iso + "|" + marketplace + "|" + asin;
-        const isOpenDay = iso === maxDateInBatch;
+        const inRefreshWindow = refreshCutoff !== null && iso >= refreshCutoff;
 
         const existingIdx = index.get(dedupeKey);
-        if (existingIdx !== undefined && !isOpenDay) continue; // giorno chiuso e gia' registrato: niente da fare
+        if (existingIdx !== undefined && !inRefreshWindow) continue; // giorno vecchio e gia' registrato: niente da fare
 
         const sales = num(row["SalesOrganic"]) + num(row["SalesPPC"]);
         const netProfit = num(row["NetProfit"]);
@@ -89,7 +97,7 @@ async function main() {
         const record = [iso, acc.key, marketplace, asin, sales, netProfit, adSpend, refunds, units];
 
         if (existingIdx !== undefined) {
-          history[existingIdx] = record; // giorno ancora aperto: sovrascrivi con i numeri rivisti
+          history[existingIdx] = record; // dentro la finestra degli ultimi 7 giorni: sovrascrivi con i numeri rivisti
           updated++;
         } else {
           index.set(dedupeKey, history.length);
@@ -98,7 +106,7 @@ async function main() {
         }
       }
       totalNew += inserted; totalUpdated += updated;
-      console.log(`[${acc.key}] Prodotti: ${inserted} nuovi record, ${updated} aggiornati (giorno aperto: ${maxDateInBatch})`);
+      console.log(`[${acc.key}] Prodotti: ${inserted} nuovi record, ${updated} aggiornati (finestra rifresh: ${refreshCutoff} -> ${maxDateInBatch})`);
     } catch (e) {
       console.error(`[${acc.key}] ERRORE: ${e.message}`);
       process.exitCode = 1;
