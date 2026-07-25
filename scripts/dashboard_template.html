@@ -721,6 +721,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
     'CM (contribution margin) = Net profit sellerboard. Acos e Refund% pesati sulle vendite/unità della riga, non media semplice tra i giorni. ' +
     'Raggruppamento "parent" costruito a mano da ASIN &rarr; linea prodotto. Eventuali ASIN non ancora mappati appaiono come riga "Non mappato (nuovi ASIN)" per paese, contati comunque nei totali. ' +
     'Dati disponibili dal ' + fmtDateIt(MIN_DATE) + ' al ' + fmtDateIt(MAX_DATE) + '. ' +
+    'Net profit: nei giorni recenti è calibrato sul pannello P&L reale di sellerboard (il report Prodotti da solo non torna esatto, per un\'incoerenza interna a sellerboard tra le sue due pipeline di calcolo); più indietro nel tempo, dove il P&L non copre più, resta il valore grezzo del report Prodotti. ' +
     'Usa è un account sellerboard separato dall\'EU: sempre segnalato in arancio, con bordo squadrato per distinguerlo anche senza colore, mostrato in $, escluso dalla riga KPI in alto che resta EU-only.';
 }
 

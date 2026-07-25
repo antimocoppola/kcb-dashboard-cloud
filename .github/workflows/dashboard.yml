@@ -25,11 +25,17 @@ jobs:
       - name: Installa dipendenze
         run: npm install axios csv-parse
 
-      - name: Scarica nuovi dati sellerboard (solo report Prodotti)
+      - name: Scarica nuovi dati sellerboard (report Prodotti)
         run: node scripts/cloud_import.mjs
         env:
           EU_PRODUCTS_URL: ${{ secrets.EU_PRODUCTS_URL }}
           US_PRODUCTS_URL: ${{ secrets.US_PRODUCTS_URL }}
+
+      - name: Scarica il report P&L (per calibrare il Net profit)
+        run: node scripts/cloud_import_pnl.mjs
+        env:
+          EU_PROFIT_URL: ${{ secrets.EU_PROFIT_URL }}
+          US_PROFIT_URL: ${{ secrets.US_PROFIT_URL }}
 
       - name: Ricostruisci la dashboard
         run: node scripts/cloud_build.mjs
@@ -38,6 +44,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/history.json docs/index.html
+          git add data/history.json data/pnl.json docs/index.html
           git diff --staged --quiet || git commit -m "Aggiornamento dati $(date -u +%Y-%m-%d)"
           git push

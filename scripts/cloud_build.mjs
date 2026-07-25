@@ -32,17 +32,49 @@ const PARENT_NAMES = {
 
 function main() {
   const history = JSON.parse(fs.readFileSync(path.join(REPO_DIR, "data", "history.json"), "utf8"));
+  const pnlFile = path.join(REPO_DIR, "data", "pnl.json");
+  const pnl = fs.existsSync(pnlFile) ? JSON.parse(fs.readFileSync(pnlFile, "utf8")) : [];
+
+  // Il "NetProfit" per-ASIN del report Prodotti non torna esatto col pannello P&L
+  // di sellerboard (le due pipeline interne di SB calcolano il profit in modo
+  // diverso - verificato riga per riga, non e' un problema di formula nostra).
+  // Il report P&L invece e' esatto ma solo a livello di intero account/giorno
+  // (nessuna colonna paese/ASIN, e solo una finestra scorrevole di ~7 giorni).
+  // Qui calcoliamo un fattore di calibrazione account+giorno = P&L / somma-Prodotti
+  // e lo applichiamo a ogni riga di quel giorno: i giorni coperti dal P&L (recenti,
+  // crescono da quando abbiamo iniziato a salvarlo) diventano piu' vicini al vero,
+  // i giorni piu' vecchi (fuori dalla finestra P&L) restano col valore grezzo.
+  const pnlByKey = new Map();
+  for (const [iso, accKey, , netProfit] of pnl) pnlByKey.set(accKey + "|" + iso, netProfit);
+
+  const productsSumByKey = new Map();
+  for (const [iso, accKey, , , , netProfit] of history) {
+    const key = accKey + "|" + iso;
+    productsSumByKey.set(key, (productsSumByKey.get(key) || 0) + netProfit);
+  }
+
+  const factorByKey = new Map();
+  for (const [key, pnlNetProfit] of pnlByKey) {
+    const productsSum = productsSumByKey.get(key);
+    if (productsSum === undefined || Math.abs(productsSum) < 1) continue; // evita divisioni per ~0
+    factorByKey.set(key, pnlNetProfit / productsSum);
+  }
 
   const rows = [];
   let minDate = null, maxDate = null;
+  let calibratedDays = new Set();
   for (const [iso, accKey, marketplace, asin, sales, netProfit, adSpend, refunds, units] of history) {
     if (!minDate || iso < minDate) minDate = iso;
     if (!maxDate || iso > maxDate) maxDate = iso;
     const parent = ASIN_TO_PARENT[asin] || null;
-    rows.push([iso, accKey, marketplace, parent, sales, netProfit, adSpend, refunds, units]);
+    const factor = factorByKey.get(accKey + "|" + iso);
+    const calibratedNetProfit = factor !== undefined ? netProfit * factor : netProfit;
+    if (factor !== undefined) calibratedDays.add(accKey + "|" + iso);
+    rows.push([iso, accKey, marketplace, parent, sales, calibratedNetProfit, adSpend, refunds, units]);
   }
 
   const dataset = { minDate, maxDate, parentNames: PARENT_NAMES, generatedAt: new Date().toISOString(), rows };
+  console.log("giorni calibrati con P&L reale:", calibratedDays.size, "su", new Set(history.map(r => r[1]+"|"+r[0])).size, "giorni totali");
 
   const template = fs.readFileSync(path.join(__dirname, "dashboard_template.html"), "utf8");
   const fragment = template.replace("__DATA_PLACEHOLDER__", JSON.stringify(dataset));
