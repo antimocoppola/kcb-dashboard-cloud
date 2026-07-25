@@ -36,7 +36,8 @@ function toISO(ddmmyyyy) {
 }
 
 async function main() {
-  const pnl = fs.existsSync(PNL_FILE) ? JSON.parse(fs.readFileSync(PNL_FILE, "utf8")) : [];
+  const pnlRaw = fs.existsSync(PNL_FILE) ? JSON.parse(fs.readFileSync(PNL_FILE, "utf8")) : [];
+  const pnl = pnlRaw.map((r) => r.length === 4 ? [...r, 0] : r); // migra i record senza vat
   const index = new Map();
   pnl.forEach((r, i) => index.set(r[1] + "|" + r[0], i));
 
@@ -53,8 +54,9 @@ async function main() {
         const iso = toISO(rawDate);
         const sales = num(row["SalesOrganic"]) + num(row["SalesPPC"]);
         const netProfit = num(row["NetProfit"]);
+        const vat = Math.abs(num(row["VAT"]));
         const key = acc.key + "|" + iso;
-        const record = [iso, acc.key, sales, netProfit];
+        const record = [iso, acc.key, sales, netProfit, vat];
         const existingIdx = index.get(key);
         if (existingIdx !== undefined) { pnl[existingIdx] = record; updated++; }
         else { index.set(key, pnl.length); pnl.push(record); inserted++; }

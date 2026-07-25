@@ -41,10 +41,15 @@ function toISO(ddmmyyyy) {
 
 async function main() {
   const historyRaw = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
-  // Record piu' vecchi (prima della fix SKU) avevano 9 campi: normalizza a 10 (sku vuoto,
-  // non recuperabile retroattivamente) cosi' la destrutturazione in cloud_build.mjs resta
-  // sempre allineata.
-  let history = historyRaw.map((r) => r.length === 9 ? [r[0], r[1], r[2], r[3], "", r[4], r[5], r[6], r[7], r[8]] : r);
+  // Record piu' vecchi avevano 9 campi (prima della fix SKU) o 10 (prima di aggiungere
+  // il VAT): normalizza sempre a 11 (sku vuoto e/o vat 0, non recuperabili retroattivamente
+  // per le date fuori dalla finestra di refresh) cosi' la destrutturazione in
+  // cloud_build.mjs resta sempre allineata.
+  let history = historyRaw.map((r) => {
+    if (r.length === 9) return [r[0], r[1], r[2], r[3], "", r[4], r[5], r[6], r[7], r[8], 0];
+    if (r.length === 10) return [...r, 0];
+    return r;
+  });
 
   let totalRemoved = 0, totalInserted = 0;
 
@@ -88,7 +93,8 @@ async function main() {
         const adSpend = Math.abs(num(row["Ads spend"]));
         const refunds = num(row["Refunds"]);
         const units = (parseInt(row["UnitsOrganic"]) || 0) + (parseInt(row["UnitsPPC"]) || 0);
-        history.push([iso, acc.key, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units]);
+        const vat = Math.abs(num(row["VAT"]));
+        history.push([iso, acc.key, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units, vat]);
         inserted++;
       }
       totalRemoved += removed; totalInserted += inserted;

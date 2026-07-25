@@ -35,42 +35,50 @@ function main() {
   const pnlFile = path.join(REPO_DIR, "data", "pnl.json");
   const pnl = fs.existsSync(pnlFile) ? JSON.parse(fs.readFileSync(pnlFile, "utf8")) : [];
 
-  // Il "NetProfit" per-ASIN del report Prodotti non torna esatto col pannello P&L
-  // di sellerboard (le due pipeline interne di SB calcolano il profit in modo
-  // diverso - verificato riga per riga, non e' un problema di formula nostra).
-  // Il report P&L invece e' esatto ma solo a livello di intero account/giorno
-  // (nessuna colonna paese/ASIN, e solo una finestra scorrevole di ~7 giorni).
-  // Qui calcoliamo un fattore di calibrazione account+giorno = P&L / somma-Prodotti
-  // e lo applichiamo a ogni riga di quel giorno: i giorni coperti dal P&L (recenti,
-  // crescono da quando abbiamo iniziato a salvarlo) diventano piu' vicini al vero,
-  // i giorni piu' vecchi (fuori dalla finestra P&L) restano col valore grezzo.
-  const pnlByKey = new Map();
-  for (const [iso, accKey, , netProfit] of pnl) pnlByKey.set(accKey + "|" + iso, netProfit);
-
-  const productsSumByKey = new Map();
-  for (const [iso, accKey, , , , , netProfit] of history) {
+  // Il NetProfit e il VAT per-ASIN del report Prodotti non tornano esatti col pannello
+  // P&L di sellerboard (le due pipeline interne di SB calcolano entrambi in modo
+  // diverso - verificato riga per riga, non e' un problema di formula nostra). Il
+  // report P&L invece e' esatto ma solo a livello di intero account/giorno (nessuna
+  // colonna paese/ASIN, e solo una finestra scorrevole di ~7 giorni). Calcoliamo un
+  // fattore di calibrazione account+giorno = P&L / somma-Prodotti per ciascuno dei due
+  // valori, e lo applichiamo a ogni riga di quel giorno: i giorni coperti dal P&L
+  // (recenti, crescono da quando abbiamo iniziato a salvarlo) diventano piu' vicini
+  // al vero, i giorni piu' vecchi (fuori dalla finestra P&L) restano col valore grezzo.
+  const netProfitSumByKey = new Map();
+  const vatSumByKey = new Map();
+  for (const [iso, accKey, , , , , netProfit, , , , vat] of history) {
     const key = accKey + "|" + iso;
-    productsSumByKey.set(key, (productsSumByKey.get(key) || 0) + netProfit);
+    netProfitSumByKey.set(key, (netProfitSumByKey.get(key) || 0) + netProfit);
+    vatSumByKey.set(key, (vatSumByKey.get(key) || 0) + vat);
   }
 
-  const factorByKey = new Map();
-  for (const [key, pnlNetProfit] of pnlByKey) {
-    const productsSum = productsSumByKey.get(key);
-    if (productsSum === undefined || Math.abs(productsSum) < 1) continue; // evita divisioni per ~0
-    factorByKey.set(key, pnlNetProfit / productsSum);
+  function buildFactorMap(pnlValueIdx, productsSumByKey) {
+    const map = new Map();
+    for (const r of pnl) {
+      const key = r[1] + "|" + r[0];
+      const productsSum = productsSumByKey.get(key);
+      if (productsSum === undefined || Math.abs(productsSum) < 1) continue; // evita divisioni per ~0
+      map.set(key, r[pnlValueIdx] / productsSum);
+    }
+    return map;
   }
+  const netProfitFactorByKey = buildFactorMap(3, netProfitSumByKey);
+  const vatFactorByKey = buildFactorMap(4, vatSumByKey);
 
   const rows = [];
   let minDate = null, maxDate = null;
   let calibratedDays = new Set();
-  for (const [iso, accKey, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units] of history) {
+  for (const [iso, accKey, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units, vat] of history) {
     if (!minDate || iso < minDate) minDate = iso;
     if (!maxDate || iso > maxDate) maxDate = iso;
     const parent = ASIN_TO_PARENT[asin] || null;
-    const factor = factorByKey.get(accKey + "|" + iso);
-    const calibratedNetProfit = factor !== undefined ? netProfit * factor : netProfit;
-    if (factor !== undefined) calibratedDays.add(accKey + "|" + iso);
-    rows.push([iso, accKey, marketplace, parent, sales, calibratedNetProfit, adSpend, refunds, units]);
+    const key = accKey + "|" + iso;
+    const npFactor = netProfitFactorByKey.get(key);
+    const vatFactor = vatFactorByKey.get(key);
+    const calibratedNetProfit = npFactor !== undefined ? netProfit * npFactor : netProfit;
+    const calibratedVat = vatFactor !== undefined ? vat * vatFactor : vat;
+    if (npFactor !== undefined) calibratedDays.add(key);
+    rows.push([iso, accKey, marketplace, parent, sales, calibratedNetProfit, adSpend, refunds, units, calibratedVat]);
   }
 
   const dataset = { minDate, maxDate, parentNames: PARENT_NAMES, generatedAt: new Date().toISOString(), rows };

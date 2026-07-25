@@ -197,15 +197,16 @@ const pct = (n) => Math.round(n*10)/10;
 const round = (n) => Math.round(n);
 const meaningful = (o) => o.sales > 0 || o.refunds > 0 || Math.abs(o.netProfit) >= 1;
 function metrics(o) {
+  const netSales = o.sales - o.vat; // sellerboard calcola il Margin% sulle vendite al netto IVA, non sul lordo
   return { sales: round(o.sales), netProfit: round(o.netProfit), adSpend: round(o.adSpend), units: round(o.units),
-    marginPct: o.sales>0 ? pct(o.netProfit/o.sales*100) : 0,
+    marginPct: netSales>0 ? pct(o.netProfit/netSales*100) : 0,
     acosPct: o.sales>0 ? pct(o.adSpend/o.sales*100) : 0,
     resiPct: o.units>0 ? pct(o.refunds/o.units*100) : 0 };
 }
 const fmtUnits = (v) => Math.round(v).toLocaleString('it-IT');
-function emptyAgg(){ return { sales:0, netProfit:0, adSpend:0, refunds:0, units:0 }; }
+function emptyAgg(){ return { sales:0, netProfit:0, adSpend:0, refunds:0, units:0, vat:0 }; }
 function addRow(agg, r){
-  agg.sales += r[4]; agg.netProfit += r[5]; agg.adSpend += r[6]; agg.refunds += r[7]; agg.units += r[8];
+  agg.sales += r[4]; agg.netProfit += r[5]; agg.adSpend += r[6]; agg.refunds += r[7]; agg.units += r[8]; agg.vat += r[9] || 0;
 }
 
 function shiftDate(iso, days){
