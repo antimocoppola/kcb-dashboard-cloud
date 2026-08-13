@@ -355,8 +355,17 @@ function tgtSpan(text){
   return ' <span class="tgt'+(text === 'ND' ? ' nd' : '')+'">('+text+')</span>';
 }
 function mon0(iso){ const d = new Date(iso + "T00:00:00Z"); return (d.getUTCDay() + 6) % 7; }
+// Target settimanali (divisor:1) restano quelli di sempre: intervallo esatto lun-dom.
+// Target giornalieri (divisor:7) sono gli stessi target settimanali divisi per 7 su
+// Sales/CM soltanto - Margin/Acos/Refund non si dividono, sono gia' percentuali - e si
+// attivano SOLO quando l'intervallo selezionato e' esattamente un singolo giorno.
 function getWeekTargetContext(from, to){
   const days = Math.round((new Date(to) - new Date(from)) / 86400000) + 1;
+  if (days === 1) {
+    const [y, m] = from.slice(0, 7).split('-').map(Number);
+    if (y !== 2026 || m < 7 || m > 9) return { active: false };
+    return { active: true, month: m, divisor: 7, daily: true };
+  }
   if (days !== 7 || mon0(from) !== 0 || mon0(to) !== 6) return { active: false };
   const counts = {};
   let d = from;
@@ -368,7 +377,15 @@ function getWeekTargetContext(from, to){
   const [majorityKey] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
   const [y, m] = majorityKey.split('-').map(Number);
   if (y !== 2026 || m < 7 || m > 9) return { active: false };
-  return { active: true, month: m };
+  return { active: true, month: m, divisor: 1, daily: false };
+}
+// Sales/CM di un target settimanale (parent o monthly) scalati per il divisor del
+// contesto attivo (7 in modalita' giornaliera, 1 in modalita' settimanale) - Margin/Acos/
+// Refund restano invariati, non hanno bisogno di scala.
+function scaledTgt(tgt, divisor){
+  if (!tgt) return tgt;
+  const d = divisor || 1;
+  return { ...tgt, sales: tgt.sales / d, cm: tgt.cm / d };
 }
 
 document.getElementById('updated-tag').textContent = 'Dati aggiornati al ' + fmtDateIt(MAX_DATE) + ' (import del ' + new Date(GENERATED_AT).toLocaleString('it-IT') + ')';
@@ -385,7 +402,7 @@ function recompute(){
   const weekCtx = getWeekTargetContext(from, to);
   const monthNames = { 7: 'luglio', 8: 'agosto', 9: 'settembre' };
   document.getElementById('range-info').textContent = fmtDateIt(from) + ' → ' + fmtDateIt(to) + ' (' + nDays + ' giorni, ' + filtered.length + ' righe)' +
-    (weekCtx.active ? ' · target Q3 attivi (' + monthNames[weekCtx.month] + ')' : '');
+    (weekCtx.active ? (weekCtx.daily ? ' · target giornaliero attivo (' + monthNames[weekCtx.month] + ')' : ' · target Q3 attivi (' + monthNames[weekCtx.month] + ')') : '');
 
   if (filtered.length === 0) {
     document.getElementById('kpi-row').innerHTML = '';
@@ -472,7 +489,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
   const euCountryRowsHtml = countryRows.map(r => {
     const countryTgt = COUNTRY_TARGETS[r.country];
     const useTarget = weekCtx.active && countryTgt;
-    const monthTgt = useTarget ? countryTgt.monthly[weekCtx.month] : null;
+    const monthTgt = scaledTgt(useTarget ? countryTgt.monthly[weekCtx.month] : null, weekCtx.divisor);
     const salesHtml = (useTarget ? '<span class="pill '+targetClass(r.sales, monthTgt.sales, false)+'">'+fmtEUR(r.sales)+'</span>' : fmtEUR(r.sales)) + (useTarget ? tgtSpan(fmtEUR(monthTgt.sales)) : '');
     const cmHtml = (useTarget ? '<span class="pill '+targetClass(r.netProfit, monthTgt.cm, false)+'">'+fmtEUR(r.netProfit)+'</span>' : fmtEUR(r.netProfit)) + (useTarget ? tgtSpan(fmtEUR(monthTgt.cm)) : '');
     const mCls = useTarget ? targetClass(r.marginPct, countryTgt.overall.marginPct, false) : marginClass(r.marginPct);
@@ -492,7 +509,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
   }).join('');
 
   const useUsaTarget = weekCtx.active;
-  const usaMonthTgt = useUsaTarget ? USA_TARGETS.monthly[weekCtx.month] : null;
+  const usaMonthTgt = scaledTgt(useUsaTarget ? USA_TARGETS.monthly[weekCtx.month] : null, weekCtx.divisor);
   const usaSalesHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaOverall.sales, usaMonthTgt.sales, false)+'">'+fmtUSD(usaOverall.sales)+'</span>' : fmtUSD(usaOverall.sales)) + (useUsaTarget ? tgtSpan(fmtUSD(usaMonthTgt.sales)) : '');
   const usaCmHtml = (useUsaTarget ? '<span class="pill '+targetClass(usaOverall.netProfit, usaMonthTgt.cm, false)+'">'+fmtUSD(usaOverall.netProfit)+'</span>' : fmtUSD(usaOverall.netProfit)) + (useUsaTarget ? tgtSpan(fmtUSD(usaMonthTgt.cm)) : '');
   const usaMCls = useUsaTarget ? targetClass(usaOverall.marginPct, USA_TARGETS.overall.marginPct, false) : marginClass(usaOverall.marginPct);
@@ -518,7 +535,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
     const usaRow = usaByKey.get(p.key);
     const rows = p.countries.map(c => {
       const countryTgt = COUNTRY_TARGETS[c.country];
-      const parentTgt = countryTgt && countryTgt.parents[p.key];
+      const parentTgt = scaledTgt(countryTgt && countryTgt.parents[p.key], weekCtx.divisor);
       const useTarget = weekCtx.active && parentTgt;
       const useNeutral = weekCtx.active && countryTgt && !parentTgt;
       const salesTgt = useTarget ? fmtEUR(parentTgt.sales) : (useNeutral ? 'ND' : null);
@@ -544,7 +561,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
         '</tr>'
       );
     }).join('') + (usaRow ? (() => {
-      const usaParentTgt = USA_TARGETS.parents[p.key];
+      const usaParentTgt = scaledTgt(USA_TARGETS.parents[p.key], weekCtx.divisor);
       const useUsaTarget = weekCtx.active && usaParentTgt;
       const useUsaNeutral = weekCtx.active && !usaParentTgt;
       const usaSalesTgt = useUsaTarget ? fmtUSD(usaParentTgt.sales) : (useUsaNeutral ? 'ND' : null);
@@ -603,7 +620,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
     const adSpend = r.sales > 0 ? Math.round(r.sales * r.acosPct / 100) : products.reduce((s,x)=>s+x.adSpend,0);
     const countryTgt = COUNTRY_TARGETS[r.country];
     const rows = products.map(c => {
-      const parentTgt = countryTgt && countryTgt.parents[c.key];
+      const parentTgt = scaledTgt(countryTgt && countryTgt.parents[c.key], weekCtx.divisor);
       const useTarget = weekCtx.active && parentTgt;
       const useNeutral = weekCtx.active && countryTgt && !parentTgt;
       const salesTgt = useTarget ? fmtEUR(parentTgt.sales) : (useNeutral ? 'ND' : null);
@@ -630,7 +647,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
       );
     }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--ink-3);font-family:var(--sans);">nessun prodotto mappato per questo paese</td></tr>';
     const useSumTarget = weekCtx.active && countryTgt;
-    const sumMonthTgt = useSumTarget ? countryTgt.monthly[weekCtx.month] : null;
+    const sumMonthTgt = scaledTgt(useSumTarget ? countryTgt.monthly[weekCtx.month] : null, weekCtx.divisor);
     const sumACls = useSumTarget ? targetClass(r.acosPct, countryTgt.overall.acosPct, true) : acosClass(r.acosPct);
     const sumMCls = useSumTarget ? targetClass(r.marginPct, countryTgt.overall.marginPct, false) : marginClass(r.marginPct);
     const sumRCls = useSumTarget ? targetClass(r.resiPct, countryTgt.overall.resiPct, true) : resiClass(r.resiPct);
@@ -685,7 +702,7 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
           '<th>Prodotto</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
         '</tr></thead><tbody>'+
         usaProducts.map(p => {
-          const pTgt = USA_TARGETS.parents[p.key];
+          const pTgt = scaledTgt(USA_TARGETS.parents[p.key], weekCtx.divisor);
           const pUseTarget = weekCtx.active && pTgt;
           const pUseNeutral = weekCtx.active && !pTgt;
           const pSalesTgt = pUseTarget ? fmtUSD(pTgt.sales) : (pUseNeutral ? 'ND' : null);
