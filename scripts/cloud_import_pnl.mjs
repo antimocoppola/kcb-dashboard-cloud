@@ -47,6 +47,7 @@ async function main() {
     if (!acc.url) { console.log(`[${acc.key}] P&L: nessun URL configurato, salto`); continue; }
     try {
       const { data: csv } = await axios.get(acc.url, { timeout: 30000, responseType: "text", headers: { "User-Agent": "Mozilla/5.0" } });
+      if (csv.startsWith("Report not ready")) throw new Error("report non pronto lato sellerboard, riprovare al prossimo giro");
       const rows = parseCSV(csv);
       for (const row of rows) {
         const rawDate = row["Date"] || "";

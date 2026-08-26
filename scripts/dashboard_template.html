@@ -86,6 +86,19 @@ tbody tr:hover{background:var(--surface-2);}
 .tgt{font-size:10px; font-weight:400; color:var(--ink-3); margin-left:3px; white-space:nowrap;}
 .tgt.nd{font-style:italic;}
 .neg{color:var(--bad-ink);}
+tbody tr.row-toggle{cursor:pointer;}
+tbody tr.row-toggle:hover{background:var(--surface-2);}
+tbody tr.row-toggle.open{background:var(--surface-2);}
+tbody tr.row-toggle .car2{display:inline-block; font-size:12px; color:var(--ink-3); transition:transform .15s ease; margin-right:5px;}
+tbody tr.row-toggle.open .car2{transform:rotate(90deg);}
+tr.detail-row td{padding:0 !important; border-bottom:.5px solid var(--line);}
+.detail-inner{padding:6px 8px 8px 26px; background:var(--paper);}
+.detail-inner table{font-size:12px;}
+.detail-inner th{font-size:9px;}
+.detail-inner td{padding:5px 8px;}
+.sku-name{font-family:var(--mono); color:var(--ink-2); text-align:left;}
+.asin-name{font-family:var(--sans); font-size:10px; color:var(--ink-3); text-align:left; margin-left:16px;}
+.country-name-sm{font-family:var(--sans); text-transform:uppercase; color:var(--ink-2); text-align:left;}
 .ledger{display:flex; flex-direction:column; gap:8px;}
 details{background:var(--surface); border:.5px solid var(--line); border-radius:var(--radius); overflow:hidden;}
 summary{list-style:none; cursor:pointer; padding:.65rem .85rem; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
@@ -174,6 +187,14 @@ details.other-account{border-radius:0 var(--radius) var(--radius) 0; border-left
       </div>
       <div class="ledger" id="country-ledger"></div>
     </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-title"><i class="ti ti-list-details" aria-hidden="true"></i> Per prodotto &middot; per child</span>
+      <span class="sec-note">clic sul parent per i child, clic sul child per il paese</span>
+    </div>
+    <div class="ledger" id="child-ledger"></div>
   </div>
 
   <p class="footnote" id="footnote"></p>
@@ -409,6 +430,7 @@ function recompute(){
     document.getElementById('country-body').innerHTML = '';
     document.getElementById('product-ledger').innerHTML = '';
     document.getElementById('country-ledger').innerHTML = '<p class="empty-msg">Nessun dato nell\'intervallo selezionato.</p>';
+    document.getElementById('child-ledger').innerHTML = '';
     document.getElementById('footnote').textContent = '';
     return;
   }
@@ -470,14 +492,36 @@ function recompute(){
   })).sort((a,b)=>b.sales-a.sales);
   const usaByKey = new Map(usaProducts.map(p => [p.key, p]));
 
-  render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx);
+  // "Per prodotto · per child": terzo livello, EU+USA insieme (non separati per account/valuta,
+  // e' una vista trasversale) - parent -> child (ASIN/SKU) -> paese, tutto da 'filtered' cosi'
+  // copre lo stesso intervallo di date scelto dall'utente, storico completo dal 2025.
+  const byParentAllAgg = {};
+  const byChildAgg = {};
+  const byChildCountryAgg = {};
+  for (const r of filtered) {
+    const parentKey = r[3] || 'UNMAPPED';
+    const asin = r[10] || '—', sku = r[11] || '—';
+    if (!byParentAllAgg[parentKey]) byParentAllAgg[parentKey] = emptyAgg();
+    addRow(byParentAllAgg[parentKey], r);
+    const ckey = parentKey + '|' + asin;
+    if (!byChildAgg[ckey]) byChildAgg[ckey] = { parent: parentKey, asin, sku, ...emptyAgg() };
+    addRow(byChildAgg[ckey], r);
+    const cckey = ckey + '|' + r[2];
+    if (!byChildCountryAgg[cckey]) byChildCountryAgg[cckey] = { parent: parentKey, asin, country: r[2], ...emptyAgg() };
+    addRow(byChildCountryAgg[cckey], r);
+  }
+  const parentChildTotals = Object.entries(byParentAllAgg).filter(([,v])=>meaningful(v)).map(([key,v]) => ({ key, ...metrics(v) })).sort((a,b)=>b.sales-a.sales);
+  const childRows2 = Object.values(byChildAgg).filter(v=>meaningful(v)).map(v => ({ parent: v.parent, asin: v.asin, sku: v.sku, ...metrics(v) }));
+  const childCountryRows = Object.values(byChildCountryAgg).filter(v=>meaningful(v)).map(v => ({ parent: v.parent, asin: v.asin, country: v.country, ...metrics(v) }));
+
+  render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx, { parentChildTotals, childRows: childRows2, childCountryRows });
 }
 
 function kpiTile(label, value, cls){
   return '<div class="kpi"><span class="lbl">'+label+'</span><span class="val'+(cls?' '+cls:'')+'">'+value+'</span></div>';
 }
 
-function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx){
+function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOverall, usaProducts, usaByKey, weekCtx, childLedgerData){
   document.getElementById('kpi-row').innerHTML = [
     kpiTile('Sales', fmtEUR(euOverall.sales)),
     kpiTile('Net profit', fmtEUR(euOverall.netProfit), euOverall.netProfit<0 ? 'neg' : ''),
@@ -734,6 +778,83 @@ function render(euOverall, countryRows, euParentTotals, byCountryProducts, usaOv
   );
 
   document.getElementById('country-ledger').innerHTML = ledgerHtml;
+
+  const { parentChildTotals, childRows: childRowsAll, childCountryRows } = childLedgerData;
+  function countryTableForChild(parentKey, asin){
+    const rows = childCountryRows.filter(r => r.parent === parentKey && r.asin === asin).sort((a,b) => b.sales - a.sales);
+    const body = rows.map(r => (
+      '<tr>'+
+      '<td class="country-name-sm">'+r.country+'</td>'+
+      '<td class="mono">'+fmtEUR(r.sales)+'</td>'+
+      '<td class="mono">'+fmtUnits(r.units)+'</td>'+
+      '<td class="mono'+(r.netProfit<0?' neg':'')+'">'+fmtEUR(r.netProfit)+'</td>'+
+      '<td><span class="pill '+marginClass(r.marginPct)+'">'+fmtPct(r.marginPct)+'</span></td>'+
+      '<td><span class="pill '+acosClass(r.acosPct)+'">'+fmtPct(r.acosPct)+'</span></td>'+
+      '<td class="mono">'+fmtEUR(r.adSpend)+'</td>'+
+      '<td><span class="pill '+resiClass(r.resiPct)+'">'+fmtPct(r.resiPct)+'</span></td>'+
+      '</tr>'
+    )).join('');
+    return (
+      '<div class="detail-inner"><table><thead><tr>'+
+        '<th style="text-align:left;">Paese</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
+      '</tr></thead><tbody>'+body+'</tbody></table></div>'
+    );
+  }
+  function childTableForParent(parentKey){
+    const rows = childRowsAll.filter(r => r.parent === parentKey).sort((a,b) => b.sales - a.sales);
+    const trs = rows.map(r => {
+      const rowId = 'crow-' + parentKey + '-' + r.asin;
+      return (
+        '<tr class="row-toggle" data-target="'+rowId+'">'+
+        '<td class="sku-name"><i class="car2">▸</i>'+r.sku+'<div class="asin-name">'+r.asin+'</div></td>'+
+        '<td class="mono">'+fmtEUR(r.sales)+'</td>'+
+        '<td class="mono">'+fmtUnits(r.units)+'</td>'+
+        '<td class="mono'+(r.netProfit<0?' neg':'')+'">'+fmtEUR(r.netProfit)+'</td>'+
+        '<td><span class="pill '+marginClass(r.marginPct)+'">'+fmtPct(r.marginPct)+'</span></td>'+
+        '<td><span class="pill '+acosClass(r.acosPct)+'">'+fmtPct(r.acosPct)+'</span></td>'+
+        '<td class="mono">'+fmtEUR(r.adSpend)+'</td>'+
+        '<td><span class="pill '+resiClass(r.resiPct)+'">'+fmtPct(r.resiPct)+'</span></td>'+
+        '</tr>'+
+        '<tr class="detail-row" id="'+rowId+'" hidden><td colspan="8">'+countryTableForChild(parentKey, r.asin)+'</td></tr>'
+      );
+    }).join('');
+    return (
+      '<div class="tblwrap"><table><thead><tr>'+
+        '<th style="text-align:left;">SKU / ASIN</th><th>Sales</th><th>Unità</th><th>Net profit</th><th>Margin</th><th>Acos</th><th>Adv spend</th><th>Refund</th>'+
+      '</tr></thead><tbody>'+trs+'</tbody></table></div>'
+    );
+  }
+  const childLedgerHtml = parentChildTotals.map(p => {
+    const nChilds = childRowsAll.filter(r => r.parent === p.key).length;
+    const displayKey = p.key === 'UNMAPPED' ? 'Non mappato' : p.key;
+    return (
+      '<details>'+
+        '<summary>'+
+          '<i class="ti ti-chevron-right car" aria-hidden="true"></i>'+
+          '<span class="pname mono">'+displayKey+'</span>'+
+          '<span class="ptag">'+nChilds+' child</span>'+
+          '<span class="chips">'+
+            '<span class="pill '+acosClass(p.acosPct)+'">Acos '+fmtPct(p.acosPct)+'</span>'+
+            '<span class="pill '+marginClass(p.marginPct)+'">Margin '+fmtPct(p.marginPct)+'</span>'+
+            '<span class="pill '+resiClass(p.resiPct)+'">Refund '+fmtPct(p.resiPct)+'</span>'+
+            '<span class="stat">Units <b class="mono">'+fmtUnits(p.units)+'</b></span>'+
+            '<span class="stat">Sales <b class="mono">'+fmtEUR(p.sales)+'</b></span>'+
+            '<span class="stat">Adv <b class="mono">'+fmtEUR(p.adSpend)+'</b></span>'+
+            '<span class="stat">CM <b class="mono'+(p.netProfit<0?' neg':'')+'">'+fmtEUR(p.netProfit)+'</b></span>'+
+          '</span>'+
+        '</summary>'+
+        '<div class="detail-body">'+childTableForParent(p.key)+'</div>'+
+      '</details>'
+    );
+  }).join('');
+  document.getElementById('child-ledger').innerHTML = childLedgerHtml;
+  document.querySelectorAll('#child-ledger .row-toggle').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const target = document.getElementById(tr.dataset.target);
+      const isOpen = tr.classList.toggle('open');
+      target.hidden = !isOpen;
+    });
+  });
 
   document.getElementById('footnote').innerHTML =
     'CM (contribution margin) = Net profit sellerboard. Acos e Refund% pesati sulle vendite/unità della riga, non media semplice tra i giorni. ' +

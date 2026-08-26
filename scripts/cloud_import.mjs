@@ -57,6 +57,7 @@ async function main() {
     if (!acc.url) { console.log(`[${acc.key}] nessun URL configurato, salto`); continue; }
     try {
       const { data: csv } = await axios.get(acc.url, { timeout: 30000, responseType: "text", headers: { "User-Agent": "Mozilla/5.0" } });
+      if (csv.startsWith("Report not ready")) throw new Error("report non pronto lato sellerboard, riprovare al prossimo giro");
       const parsedRows = parseCSV(csv);
 
       const dateCol = findCol(parsedRows[0] || {}, ["date", "data", "day", "period"]);

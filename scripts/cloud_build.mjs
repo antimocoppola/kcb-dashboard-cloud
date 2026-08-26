@@ -78,7 +78,7 @@ function main() {
     const calibratedNetProfit = npFactor !== undefined ? netProfit * npFactor : netProfit;
     const calibratedVat = vatFactor !== undefined ? vat * vatFactor : vat;
     if (npFactor !== undefined) calibratedDays.add(key);
-    rows.push([iso, accKey, marketplace, parent, sales, calibratedNetProfit, adSpend, refunds, units, calibratedVat]);
+    rows.push([iso, accKey, marketplace, parent, sales, calibratedNetProfit, adSpend, refunds, units, calibratedVat, asin, sku]);
   }
 
   const dataset = { minDate, maxDate, parentNames: PARENT_NAMES, generatedAt: new Date().toISOString(), rows };
