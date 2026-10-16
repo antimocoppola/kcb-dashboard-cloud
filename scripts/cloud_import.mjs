@@ -42,12 +42,13 @@ function toISO(ddmmyyyy) {
 async function main() {
   const historyRaw = fs.existsSync(HISTORY_FILE) ? JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8")) : [];
   // Record piu' vecchi avevano 9 campi (prima della fix SKU) o 10 (prima di aggiungere
-  // il VAT): normalizza sempre a 11 (sku vuoto e/o vat 0, non recuperabili retroattivamente
-  // per le date fuori dalla finestra di refresh) cosi' la destrutturazione in
-  // cloud_build.mjs resta sempre allineata.
+  // il VAT) o 11 (prima di aggiungere le Sessions): normalizza sempre a 12 (sku vuoto,
+  // vat 0 e sessions null, non recuperabili retroattivamente per le date fuori dalla
+  // finestra di refresh) cosi' la destrutturazione in cloud_build.mjs resta sempre allineata.
   let history = historyRaw.map((r) => {
-    if (r.length === 9) return [r[0], r[1], r[2], r[3], "", r[4], r[5], r[6], r[7], r[8], 0];
-    if (r.length === 10) return [...r, 0];
+    if (r.length === 9) return [r[0], r[1], r[2], r[3], "", r[4], r[5], r[6], r[7], r[8], 0, null];
+    if (r.length === 10) return [...r, 0, null];
+    if (r.length === 11) return [...r, null];
     return r;
   });
 
@@ -95,7 +96,10 @@ async function main() {
         const refunds = num(row["Refunds"]);
         const units = (parseInt(row["UnitsOrganic"]) || 0) + (parseInt(row["UnitsPPC"]) || 0);
         const vat = Math.abs(num(row["VAT"]));
-        history.push([iso, acc.key, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units, vat]);
+        // Sessions: sessioni della pagina prodotto, serve per il CVR = units / sessions
+        // (stessa definizione della colonna "Unit Session Percentage" di sellerboard)
+        const sessions = Math.round(num(row["Sessions"]));
+        history.push([iso, acc.key, marketplace, asin, sku, sales, netProfit, adSpend, refunds, units, vat, sessions]);
         inserted++;
       }
       totalRemoved += removed; totalInserted += inserted;
