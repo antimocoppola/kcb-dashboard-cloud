@@ -12,6 +12,11 @@ on:
 permissions:
   contents: write
 
+# Stesso gruppo del workflow settimanale dell'Excel: non girano mai insieme.
+concurrency:
+  group: kcb-data
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest

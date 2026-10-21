@@ -1,0 +1,857 @@
+{
+ "_note": "Target SETTIMANALI per mese (Sales e CM). Settimana assegnata al mese del suo giovedi. Mese 9 = settembre ricalibrato, 10-12 = target ottobre-dicembre (CM EU 198k/198k/178k, USA $115k/105k/90k). ACOS/Margin/Refund sono invariati.",
+ "EU": {
+  "it": {
+   "overall": {
+    "marginPct": 27,
+    "acosPct": 7.5,
+    "resiPct": 8
+   },
+   "months": {
+    "9": {
+     "sales": 50100,
+     "cm": 12500
+    },
+    "10": {
+     "cm": 16070,
+     "sales": 64400
+    },
+    "11": {
+     "cm": 16610,
+     "sales": 66600
+    },
+    "12": {
+     "cm": 14450,
+     "sales": 57900
+    }
+   },
+   "parents": {
+    "KCB1": {
+     "acosPct": 6,
+     "marginPct": 27,
+     "resiPct": 12,
+     "months": {
+      "9": {
+       "sales": 11800,
+       "cm": 3100
+      },
+      "10": {
+       "sales": 18000,
+       "cm": 4730
+      },
+      "11": {
+       "sales": 18600,
+       "cm": 4890
+      },
+      "12": {
+       "sales": 16200,
+       "cm": 4250
+      }
+     }
+    },
+    "KSC": {
+     "acosPct": 9,
+     "marginPct": 22,
+     "resiPct": 7.5,
+     "months": {
+      "9": {
+       "sales": 6300,
+       "cm": 1600
+      },
+      "10": {
+       "sales": 7500,
+       "cm": 1900
+      },
+      "11": {
+       "sales": 7700,
+       "cm": 1970
+      },
+      "12": {
+       "sales": 6700,
+       "cm": 1710
+      }
+     }
+    },
+    "KCB2": {
+     "acosPct": 5,
+     "marginPct": 32,
+     "resiPct": 12,
+     "months": {
+      "9": {
+       "sales": 7800,
+       "cm": 2000
+      },
+      "10": {
+       "sales": 12400,
+       "cm": 3190
+      },
+      "11": {
+       "sales": 12900,
+       "cm": 3300
+      },
+      "12": {
+       "sales": 11200,
+       "cm": 2870
+      }
+     }
+    },
+    "HUG": {
+     "acosPct": 10,
+     "marginPct": 26,
+     "resiPct": 3,
+     "months": {
+      "9": {
+       "sales": 7800,
+       "cm": 2000
+      },
+      "10": {
+       "sales": 5700,
+       "cm": 1470
+      },
+      "11": {
+       "sales": 5900,
+       "cm": 1510
+      },
+      "12": {
+       "sales": 5100,
+       "cm": 1320
+      }
+     }
+    },
+    "KPH": {
+     "acosPct": 8,
+     "marginPct": 25,
+     "resiPct": 6,
+     "months": {
+      "9": {
+       "sales": 3900,
+       "cm": 1200
+      },
+      "10": {
+       "sales": 2700,
+       "cm": 840
+      },
+      "11": {
+       "sales": 2800,
+       "cm": 870
+      },
+      "12": {
+       "sales": 2500,
+       "cm": 760
+      }
+     }
+    },
+    "KST": {
+     "acosPct": 7,
+     "marginPct": 28,
+     "resiPct": 4,
+     "months": {
+      "9": {
+       "sales": 6300,
+       "cm": 1600
+      },
+      "10": {
+       "sales": 11100,
+       "cm": 2830
+      },
+      "11": {
+       "sales": 11500,
+       "cm": 2920
+      },
+      "12": {
+       "sales": 10000,
+       "cm": 2540
+      }
+     }
+    }
+   }
+  },
+  "de": {
+   "overall": {
+    "marginPct": 24,
+    "acosPct": 8,
+    "resiPct": 15
+   },
+   "months": {
+    "9": {
+     "sales": 51700,
+     "cm": 9400
+    },
+    "10": {
+     "cm": 8410,
+     "sales": 46200
+    },
+    "11": {
+     "cm": 8690,
+     "sales": 47800
+    },
+    "12": {
+     "cm": 7560,
+     "sales": 41600
+    }
+   },
+   "parents": {
+    "KCB1": {
+     "acosPct": 8,
+     "marginPct": 22,
+     "resiPct": 20,
+     "months": {
+      "9": {
+       "sales": 15700,
+       "cm": 3900
+      },
+      "10": {
+       "sales": 10700,
+       "cm": 2660
+      },
+      "11": {
+       "sales": 11100,
+       "cm": 2750
+      },
+      "12": {
+       "sales": 9600,
+       "cm": 2390
+      }
+     }
+    },
+    "KSC": {
+     "acosPct": 12,
+     "marginPct": 20,
+     "resiPct": 9,
+     "months": {
+      "9": {
+       "sales": 9400,
+       "cm": 2400
+      },
+      "10": {
+       "sales": 5100,
+       "cm": 1300
+      },
+      "11": {
+       "sales": 5200,
+       "cm": 1340
+      },
+      "12": {
+       "sales": 4600,
+       "cm": 1170
+      }
+     }
+    },
+    "KPH": {
+     "acosPct": 6,
+     "marginPct": 28,
+     "resiPct": 9,
+     "months": {
+      "9": {
+       "sales": 7800,
+       "cm": 1600
+      },
+      "10": {
+       "sales": 13400,
+       "cm": 2740
+      },
+      "11": {
+       "sales": 13800,
+       "cm": 2830
+      },
+      "12": {
+       "sales": 12000,
+       "cm": 2460
+      }
+     }
+    },
+    "KCB2": {
+     "acosPct": 5,
+     "marginPct": 25,
+     "resiPct": 27,
+     "months": {
+      "9": {
+       "sales": 7800,
+       "cm": 2000
+      },
+      "10": {
+       "sales": 5300,
+       "cm": 1350
+      },
+      "11": {
+       "sales": 5400,
+       "cm": 1390
+      },
+      "12": {
+       "sales": 4700,
+       "cm": 1210
+      }
+     }
+    },
+    "HUG": {
+     "acosPct": 10,
+     "marginPct": 20,
+     "resiPct": 10,
+     "months": {
+      "9": {
+       "sales": 2400,
+       "cm": 470
+      },
+      "10": {
+       "sales": 600,
+       "cm": 120
+      },
+      "11": {
+       "sales": 600,
+       "cm": 120
+      },
+      "12": {
+       "sales": 600,
+       "cm": 120
+      }
+     }
+    },
+    "KST": {
+     "acosPct": 10,
+     "marginPct": 20,
+     "resiPct": 10,
+     "months": {
+      "9": {
+       "sales": 1600,
+       "cm": 390
+      },
+      "10": {
+       "sales": 400,
+       "cm": 100
+      },
+      "11": {
+       "sales": 400,
+       "cm": 100
+      },
+      "12": {
+       "sales": 400,
+       "cm": 100
+      }
+     }
+    }
+   }
+  },
+  "fr": {
+   "overall": {
+    "marginPct": 28,
+    "acosPct": 7.5,
+    "resiPct": 7
+   },
+   "months": {
+    "9": {
+     "sales": 30600,
+     "cm": 7100
+    },
+    "10": {
+     "cm": 4610,
+     "sales": 19900
+    },
+    "11": {
+     "cm": 4770,
+     "sales": 20500
+    },
+    "12": {
+     "cm": 4150,
+     "sales": 17900
+    }
+   },
+   "parents": {
+    "KCB1": {
+     "acosPct": 7,
+     "marginPct": 27,
+     "resiPct": 6,
+     "months": {
+      "9": {
+       "sales": 19600,
+       "cm": 4700
+      },
+      "10": {
+       "sales": 10300,
+       "cm": 2470
+      },
+      "11": {
+       "sales": 10600,
+       "cm": 2550
+      },
+      "12": {
+       "sales": 9300,
+       "cm": 2220
+      }
+     }
+    },
+    "KSC": {
+     "acosPct": 4,
+     "marginPct": 29,
+     "resiPct": 6,
+     "months": {
+      "9": {
+       "sales": 1600,
+       "cm": 390
+      },
+      "10": {
+       "sales": 2200,
+       "cm": 520
+      },
+      "11": {
+       "sales": 2200,
+       "cm": 540
+      },
+      "12": {
+       "sales": 1900,
+       "cm": 470
+      }
+     }
+    },
+    "KCB2": {
+     "acosPct": 6,
+     "marginPct": 32,
+     "resiPct": 9,
+     "months": {
+      "9": {
+       "sales": 4700,
+       "cm": 1200
+      },
+      "10": {
+       "sales": 4700,
+       "cm": 1200
+      },
+      "11": {
+       "sales": 4900,
+       "cm": 1240
+      },
+      "12": {
+       "sales": 4200,
+       "cm": 1080
+      }
+     }
+    },
+    "KST": {
+     "acosPct": 12,
+     "marginPct": 20,
+     "resiPct": 3,
+     "months": {
+      "9": {
+       "sales": 1600,
+       "cm": 390
+      },
+      "10": {
+       "sales": 400,
+       "cm": 100
+      },
+      "11": {
+       "sales": 400,
+       "cm": 100
+      },
+      "12": {
+       "sales": 400,
+       "cm": 100
+      }
+     }
+    },
+    "KPH": {
+     "acosPct": 9,
+     "marginPct": 22,
+     "resiPct": 4,
+     "months": {
+      "9": {
+       "sales": 1600,
+       "cm": 390
+      },
+      "10": {
+       "sales": 1000,
+       "cm": 250
+      },
+      "11": {
+       "sales": 1000,
+       "cm": 250
+      },
+      "12": {
+       "sales": 900,
+       "cm": 220
+      }
+     }
+    },
+    "HUG": {
+     "acosPct": 10,
+     "marginPct": 20,
+     "resiPct": 10,
+     "months": {
+      "9": {
+       "sales": 2400,
+       "cm": 470
+      },
+      "10": {
+       "sales": 600,
+       "cm": 120
+      },
+      "11": {
+       "sales": 600,
+       "cm": 120
+      },
+      "12": {
+       "sales": 600,
+       "cm": 120
+      }
+     }
+    }
+   }
+  },
+  "es": {
+   "overall": {
+    "marginPct": 28,
+    "acosPct": 8,
+    "resiPct": 9
+   },
+   "months": {
+    "9": {
+     "sales": 30600,
+     "cm": 7100
+    },
+    "10": {
+     "cm": 8800,
+     "sales": 37900
+    },
+    "11": {
+     "cm": 9100,
+     "sales": 39200
+    },
+    "12": {
+     "cm": 7910,
+     "sales": 34100
+    }
+   },
+   "parents": {
+    "KCB1": {
+     "acosPct": 9,
+     "marginPct": 26,
+     "resiPct": 9,
+     "months": {
+      "9": {
+       "sales": 7800,
+       "cm": 2000
+      },
+      "10": {
+       "sales": 9300,
+       "cm": 2380
+      },
+      "11": {
+       "sales": 9600,
+       "cm": 2460
+      },
+      "12": {
+       "sales": 8400,
+       "cm": 2140
+      }
+     }
+    },
+    "HUG": {
+     "acosPct": 10,
+     "marginPct": 20,
+     "resiPct": 7,
+     "months": {
+      "9": {
+       "sales": 3100,
+       "cm": 780
+      },
+      "10": {
+       "sales": 3000,
+       "cm": 760
+      },
+      "11": {
+       "sales": 3100,
+       "cm": 780
+      },
+      "12": {
+       "sales": 2700,
+       "cm": 680
+      }
+     }
+    },
+    "KCB2": {
+     "acosPct": 6,
+     "marginPct": 33,
+     "resiPct": 13,
+     "months": {
+      "9": {
+       "sales": 6300,
+       "cm": 2000
+      },
+      "10": {
+       "sales": 6600,
+       "cm": 2110
+      },
+      "11": {
+       "sales": 6900,
+       "cm": 2180
+      },
+      "12": {
+       "sales": 6000,
+       "cm": 1900
+      }
+     }
+    },
+    "KPH": {
+     "acosPct": 9,
+     "marginPct": 26,
+     "resiPct": 6,
+     "months": {
+      "9": {
+       "sales": 5500,
+       "cm": 1600
+      },
+      "10": {
+       "sales": 4900,
+       "cm": 1420
+      },
+      "11": {
+       "sales": 5100,
+       "cm": 1470
+      },
+      "12": {
+       "sales": 4400,
+       "cm": 1280
+      }
+     }
+    },
+    "KSC": {
+     "acosPct": 8,
+     "marginPct": 23,
+     "resiPct": 6,
+     "months": {
+      "9": {
+       "sales": 2400,
+       "cm": 470
+      },
+      "10": {
+       "sales": 4600,
+       "cm": 910
+      },
+      "11": {
+       "sales": 4800,
+       "cm": 940
+      },
+      "12": {
+       "sales": 4200,
+       "cm": 810
+      }
+     }
+    },
+    "KST": {
+     "acosPct": 9,
+     "marginPct": 25,
+     "resiPct": 3,
+     "months": {
+      "9": {
+       "sales": 1600,
+       "cm": 390
+      },
+      "10": {
+       "sales": 2900,
+       "cm": 700
+      },
+      "11": {
+       "sales": 3000,
+       "cm": 720
+      },
+      "12": {
+       "sales": 2600,
+       "cm": 630
+      }
+     }
+    }
+   }
+  },
+  "co.uk": {
+   "overall": {
+    "marginPct": 26,
+    "acosPct": 9,
+    "resiPct": 6
+   },
+   "months": {
+    "9": {
+     "sales": 23500,
+     "cm": 6300
+    },
+    "10": {
+     "cm": 6350,
+     "sales": 23700
+    },
+    "11": {
+     "cm": 6570,
+     "sales": 24500
+    },
+    "12": {
+     "cm": 5710,
+     "sales": 21300
+    }
+   },
+   "parents": {
+    "KCB1": {
+     "acosPct": 11,
+     "marginPct": 20,
+     "resiPct": 10,
+     "months": {
+      "9": {
+       "sales": 5500,
+       "cm": 1200
+      },
+      "10": {
+       "sales": 2200,
+       "cm": 490
+      },
+      "11": {
+       "sales": 2300,
+       "cm": 510
+      },
+      "12": {
+       "sales": 2000,
+       "cm": 440
+      }
+     }
+    },
+    "KSC": {
+     "acosPct": 8,
+     "marginPct": 28,
+     "resiPct": 4,
+     "months": {
+      "9": {
+       "sales": 17200,
+       "cm": 5100
+      },
+      "10": {
+       "sales": 19800,
+       "cm": 5870
+      },
+      "11": {
+       "sales": 20500,
+       "cm": 6070
+      },
+      "12": {
+       "sales": 17800,
+       "cm": 5280
+      }
+     }
+    }
+   }
+  }
+ },
+ "USA": {
+  "overall": {
+   "marginPct": 26,
+   "acosPct": 12,
+   "resiPct": 10
+  },
+  "months": {
+   "9": {
+    "sales": 90000,
+    "cm": 25700
+   },
+   "10": {
+    "sales": 90900,
+    "cm": 25970
+   },
+   "11": {
+    "sales": 85800,
+    "cm": 24500
+   },
+   "12": {
+    "sales": 71200,
+    "cm": 20320
+   }
+  },
+  "parents": {
+   "KCB1": {
+    "acosPct": 12,
+    "marginPct": 20,
+    "resiPct": 13,
+    "months": {
+     "9": {
+      "sales": 13000,
+      "cm": 2000
+     },
+     "10": {
+      "sales": 12900,
+      "cm": 1990
+     },
+     "11": {
+      "sales": 12200,
+      "cm": 1880
+     },
+     "12": {
+      "sales": 10100,
+      "cm": 1560
+     }
+    }
+   },
+   "KSC": {
+    "acosPct": 12,
+    "marginPct": 25,
+    "resiPct": 10,
+    "months": {
+     "9": {
+      "sales": 80000,
+      "cm": 22700
+     },
+     "10": {
+      "sales": 88300,
+      "cm": 25060
+     },
+     "11": {
+      "sales": 83300,
+      "cm": 23640
+     },
+     "12": {
+      "sales": 69100,
+      "cm": 19610
+     }
+    }
+   },
+   "KST": {
+    "acosPct": 12,
+    "marginPct": 15,
+    "resiPct": 7,
+    "months": {
+     "9": {
+      "sales": 3000,
+      "cm": 500
+     },
+     "10": {
+      "sales": 800,
+      "cm": 130
+     },
+     "11": {
+      "sales": 800,
+      "cm": 130
+     },
+     "12": {
+      "sales": 800,
+      "cm": 130
+     }
+    }
+   },
+   "CBA": {
+    "acosPct": 12,
+    "marginPct": 15,
+    "resiPct": 7,
+    "months": {
+     "9": {
+      "sales": 3000,
+      "cm": 500
+     },
+     "10": {
+      "sales": 800,
+      "cm": 130
+     },
+     "11": {
+      "sales": 800,
+      "cm": 130
+     },
+     "12": {
+      "sales": 800,
+      "cm": 130
+     }
+    }
+   }
+  }
+ }
+}

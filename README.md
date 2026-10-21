@@ -46,6 +46,12 @@ server di GitHub Actions — non serve che nessun PC sia acceso.
   ASIN→parent del progetto locale, tienile allineate se cambi l'una o l'altra).
 - `scripts/dashboard_template.html` — stesso template/UI della dashboard locale.
 - `.github/workflows/dashboard.yml` — la pianificazione giornaliera.
+- `scripts/weekly_excel.mjs` + `.github/workflows/weekly-excel.yml` — ogni lunedi
+  genera `docs/KPI_settimanali.xlsx` (KPI per settimana, EU per paese + USA, con
+  target e colori verde/giallo/rosso; Sessions e CVR senza target). I target
+  settimanali stanno in `data/weekly_targets.json` (Sales/CM per mese: aggiungi
+  i mesi nuovi li' quando arrivano). Il file e' raggiungibile anche dalla pagina
+  GitHub Pages: `.../kcb-dashboard-cloud/KPI_settimanali.xlsx`.
 
 ## Nota sul blocco di conferma manuale
 
