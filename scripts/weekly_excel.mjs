@@ -21,6 +21,9 @@ const D = JSON.parse(dataLine.trim().slice("const DATASET = ".length).replace(/;
 const history = JSON.parse(fs.readFileSync(path.join(REPO_DIR, "data", "history.json"), "utf8"));
 if (history.length !== D.rows.length) throw new Error("history.json e dataset non sono allineati: rilanciare cloud_build.mjs");
 const TARGETS = JSON.parse(fs.readFileSync(path.join(REPO_DIR, "data", "weekly_targets.json"), "utf8"));
+// Impression e click da Helium 10 (Search Query Performance), file facoltativo aggiornato a mano
+const SQP_FILE = path.join(REPO_DIR, "data", "sqp_weekly.json");
+const SQP = fs.existsSync(SQP_FILE) ? JSON.parse(fs.readFileSync(SQP_FILE, "utf8")) : {};
 
 // ---- settimane complete ----
 const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
@@ -95,6 +98,12 @@ const METRICS = [
   { key: "sess", label: "Sessions", fmt: "#,##0", sessions: true },
   { key: "cvr", label: "CVR %", fmt: "0.00%", sessions: true },
 ];
+// righe aggiunte solo ai parent con dati Helium 10 (nessun target, nessun colore)
+const SQP_METRICS = [
+  { key: "imp", label: "Impression (SQP)", fmt: "#,##0" },
+  { key: "clk", label: "Click (SQP)", fmt: "#,##0" },
+  { key: "ctrq", label: "CTR % (SQP)", fmt: "0.00%" },
+];
 
 const COL = { good: { bg: "FFE7F1E3", fg: "FF255A29" }, warn: { bg: "FFFAF0DC", fg: "FF6B4B0F" }, bad: { bg: "FFFBEAE8", fg: "FF7A2A22" } };
 const thin = { style: "thin", color: { argb: "FFD9D9D9" } };
@@ -124,7 +133,9 @@ lg.columns = [{ width: 115 }];
   ["   ACOS, Margin% e Refund% sono fissi. Margin% e calcolato sulle vendite al netto IVA."],
   ["   Il target Sales segue la convenzione CM / margin, quindi non include l'IVA. Le Sales reali sono lorde IVA: la riga \"Sales netto IVA\" serve per un confronto piu corretto."],
   ["   I target sono in data/weekly_targets.json del repository. Per i mesi senza target le celle Target restano vuote e senza colori."],
-  ["Sessions, CVR e Unita non hanno target: servono solo per vedere l'andamento."],
+  ["Impression (SQP), Click (SQP) e CTR % (SQP): da Helium 10 / Seller Central (Brand Analytics, Search Query Performance), per i parent con dati disponibili. Contano solo impression e click delle ricerche che Amazon riporta, non tutte le impression del listing: servono per l'andamento, non come CTR assoluto della pagina."],
+  ["   Dati in data/sqp_weekly.json, aggiornati a mano: le settimane senza dato restano vuote. ES KSC copre un solo ASIN, FR KSC non disponibile."],
+  ["Sessions, CVR, Unita e le righe SQP non hanno target: servono solo per vedere l'andamento."],
 ].forEach((r) => lg.addRow(r));
 lg.getRow(1).font = { bold: true, size: 14 };
 lg.getRow(8).font = { bold: true }; lg.getRow(13).font = { bold: true };
@@ -151,8 +162,16 @@ for (const def of [...["it", "de", "fr", "es", "co.uk"].map(euSheet), usSheet()]
     const m = weeks.map((w) => derive(aggregate(u.filter, w)));
     const tg = weeks.map((w) => u.tgt(w));
     const sess = weeks.map((w) => hasSessions(w));
+    const sq = SQP[def.sheet] && SQP[def.sheet][u.name];
+    const hasSq = sq && weeks.some((w) => sq[w.from]);
+    if (hasSq) weeks.forEach((w, i) => {
+      const x = sq[w.from];
+      m[i].imp = x ? x.imp : null;
+      m[i].clk = x ? x.clk : null;
+      m[i].ctrq = x && x.imp > 0 ? x.clk / x.imp : null;
+    });
     const first = ws.rowCount + 1;
-    for (const M of METRICS) {
+    for (const M of (hasSq ? [...METRICS, ...SQP_METRICS] : METRICS)) {
       const cells = [u.name, M.label];
       weeks.forEach((w, i) => {
         let real = m[i][M.key];
