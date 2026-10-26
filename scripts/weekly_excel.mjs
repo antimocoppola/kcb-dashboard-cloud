@@ -100,8 +100,7 @@ const METRICS = [
 ];
 // righe BSR, solo per i parent con dati (nessun target, nessun colore)
 const BSR_METRICS = [
-  { key: "bsr", label: "BSR (child migliore)", fmt: "#,##0" },
-  { key: "bsrAsin", label: "ASIN child migliore", fmt: "@" },
+  { key: "bsr", label: "BSR", fmt: "#,##0" },
 ];
 
 const COL = { good: { bg: "FFE7F1E3", fg: "FF255A29" }, warn: { bg: "FFFAF0DC", fg: "FF6B4B0F" }, bad: { bg: "FFFBEAE8", fg: "FF7A2A22" } };
