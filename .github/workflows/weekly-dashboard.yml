@@ -1,11 +1,20 @@
-name: Excel KPI settimanali
+name: Dashboard KPI settimanali
 
 on:
   schedule:
-    # Ogni lunedi alle 09:00 UTC (10:00 o 11:00 in Italia secondo l'ora legale):
-    # a quell'ora la domenica appena chiusa e' completa anche per l'account USA.
+    # Ogni lunedi mattina, tre tentativi (UTC 07, 09, 11 = 08-12 in Italia secondo l'ora legale):
+    # GitHub a volte ritarda o salta le esecuzioni programmate, e se sono tutti e tre in orario
+    # il file non cambia (la pagina non contiene l'ora di generazione), quindi nessun commit in piu.
+    # Ogni run ricalcola l'ultima settimana completa, quindi anche se il primo parte prima che i dati
+    # di domenica siano arrivati, i successivi la completano.
+    - cron: '0 7 * * 1'
     - cron: '0 9 * * 1'
+    - cron: '0 11 * * 1'
   workflow_dispatch: {}
+  push:
+    # Solo per il primo collaudo: si avvia quando si modifica questo stesso file.
+    paths:
+      - '.github/workflows/weekly-dashboard.yml'
 
 permissions:
   contents: write
@@ -16,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  weekly-excel:
+  weekly-dashboard:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +35,7 @@ jobs:
           node-version: '20'
 
       - name: Installa dipendenze
-        run: npm install axios csv-parse exceljs
+        run: npm install --no-save axios csv-parse
 
       - name: Scarica nuovi dati sellerboard (report Prodotti)
         run: node scripts/cloud_import.mjs
@@ -40,17 +49,17 @@ jobs:
           EU_PROFIT_URL: ${{ secrets.EU_PROFIT_URL }}
           US_PROFIT_URL: ${{ secrets.US_PROFIT_URL }}
 
-      - name: Ricostruisci la dashboard
+      - name: Ricostruisci la dashboard principale
         run: node scripts/cloud_build.mjs
 
-      - name: Genera l'Excel dei KPI settimanali
-        run: node scripts/weekly_excel.mjs
+      - name: Genera la dashboard KPI settimanali
+        run: node scripts/weekly_dashboard.mjs
 
       - name: Commit e push se ci sono cambiamenti
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/history.json data/pnl.json docs/index.html docs/KPI_settimanali.xlsx
+          git add data/history.json data/pnl.json docs/index.html docs/kpi-settimanali.html
           git diff --staged --quiet || git commit -m "KPI settimanali $(date -u +%Y-%m-%d)"
-          git pull --rebase
+          git pull --rebase --autostash
           git push
