@@ -11,10 +11,6 @@ on:
     - cron: '0 9 * * 1'
     - cron: '0 11 * * 1'
   workflow_dispatch: {}
-  push:
-    # Solo per il primo collaudo: si avvia quando si modifica questo stesso file.
-    paths:
-      - '.github/workflows/weekly-dashboard.yml'
 
 permissions:
   contents: write
