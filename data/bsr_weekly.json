@@ -65,6 +65,16 @@
     "bsr": 325,
     "asin": "B0892LL85K",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 319,
+    "asin": "B0F9B5KDH6",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 351,
+    "asin": "B0892M2BB1",
+    "children": 8
    }
   },
   "KSC": {
@@ -85,6 +95,16 @@
    },
    "2026-10-19": {
     "bsr": 3600,
+    "asin": "B07Y7JSRNJ",
+    "children": 2
+   },
+   "2026-10-26": {
+    "bsr": 4760,
+    "asin": "B07ND58735",
+    "children": 2
+   },
+   "2026-11-02": {
+    "bsr": 4844,
     "asin": "B07Y7JSRNJ",
     "children": 2
    }
@@ -199,6 +219,16 @@
     "bsr": 204,
     "asin": "B0F9B38HPL",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 215,
+    "asin": "B07G84LSYJ",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 227,
+    "asin": "B0F9B5KDH6",
+    "children": 8
    }
   },
   "KSC": {
@@ -219,6 +249,16 @@
    },
    "2026-10-19": {
     "bsr": 388,
+    "asin": "B07ND58735",
+    "children": 2
+   },
+   "2026-10-26": {
+    "bsr": 715,
+    "asin": "B07ND58735",
+    "children": 2
+   },
+   "2026-11-02": {
+    "bsr": 490,
     "asin": "B07ND58735",
     "children": 2
    }
@@ -263,6 +303,16 @@
    },
    "2026-10-19": {
     "bsr": 630,
+    "asin": "B0B974V32V",
+    "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 641,
+    "asin": "B0D4ZNZDRH",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 665,
     "asin": "B0B974V32V",
     "children": 8
    }
@@ -333,6 +383,16 @@
     "bsr": 239,
     "asin": "B0892LL85K",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 257,
+    "asin": "B0F9B5KDH6",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 279,
+    "asin": "B0892MT1V3",
+    "children": 8
    }
   },
   "KSC": {
@@ -355,6 +415,16 @@
     "bsr": 1291,
     "asin": "B07ND58735",
     "children": 2
+   },
+   "2026-10-26": {
+    "bsr": 7087,
+    "asin": "B07Y7JSRNJ",
+    "children": 1
+   },
+   "2026-11-02": {
+    "bsr": 6093,
+    "asin": "B07Y7JSRNJ",
+    "children": 1
    }
   },
   "KST": {
@@ -398,6 +468,16 @@
    "2026-10-19": {
     "bsr": 1128,
     "asin": "B0D4ZNFKYP",
+    "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 1029,
+    "asin": "B0D4ZNZDRH",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 1395,
+    "asin": "B0B974V32V",
     "children": 8
    }
   }
@@ -467,6 +547,16 @@
     "bsr": 134,
     "asin": "B07G84LSYJ",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 147,
+    "asin": "B07G84LSYJ",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 155,
+    "asin": "B0F9B5KDH6",
+    "children": 8
    }
   },
   "KSC": {
@@ -487,6 +577,16 @@
    },
    "2026-10-19": {
     "bsr": 244,
+    "asin": "B07Y7JSRNJ",
+    "children": 2
+   },
+   "2026-10-26": {
+    "bsr": 242,
+    "asin": "B07ND58735",
+    "children": 2
+   },
+   "2026-11-02": {
+    "bsr": 249,
     "asin": "B07Y7JSRNJ",
     "children": 2
    }
@@ -557,6 +657,16 @@
     "bsr": 1213,
     "asin": "B0892M2BB1",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 1198,
+    "asin": "B0F9B38HPL",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 1123,
+    "asin": "B07G85PQ5J",
+    "children": 8
    }
   },
   "KSC": {
@@ -577,6 +687,16 @@
    },
    "2026-10-19": {
     "bsr": 210,
+    "asin": "B07ND58735",
+    "children": 2
+   },
+   "2026-10-26": {
+    "bsr": 193,
+    "asin": "B07Y7JSRNJ",
+    "children": 2
+   },
+   "2026-11-02": {
+    "bsr": 202,
     "asin": "B07ND58735",
     "children": 2
    }
@@ -603,6 +723,16 @@
     "bsr": 4292,
     "asin": "B07G85PQ5J",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 4596,
+    "asin": "B07G84LSYJ",
+    "children": 8
+   },
+   "2026-11-02": {
+    "bsr": 4833,
+    "asin": "B07G84LSYJ",
+    "children": 8
    }
   },
   "KSC": {
@@ -623,6 +753,16 @@
    },
    "2026-10-19": {
     "bsr": 706,
+    "asin": "B07Y7JSRNJ",
+    "children": 4
+   },
+   "2026-10-26": {
+    "bsr": 702,
+    "asin": "B07ND58735",
+    "children": 4
+   },
+   "2026-11-02": {
+    "bsr": 658,
     "asin": "B07Y7JSRNJ",
     "children": 4
    }
@@ -647,6 +787,16 @@
     "bsr": 29890,
     "asin": "B0F9PXS546",
     "children": 13
+   },
+   "2026-10-26": {
+    "bsr": 31798,
+    "asin": "B0C6KQ3V5D",
+    "children": 11
+   },
+   "2026-11-02": {
+    "bsr": 24789,
+    "asin": "B0F9PXWXXD",
+    "children": 11
    }
   },
   "CBA": {
@@ -668,6 +818,16 @@
    "2026-10-19": {
     "bsr": 14705,
     "asin": "B0GYFVC5ML",
+    "children": 4
+   },
+   "2026-10-26": {
+    "bsr": 14467,
+    "asin": "B0GYFXCLZH",
+    "children": 4
+   },
+   "2026-11-02": {
+    "bsr": 15499,
+    "asin": "B0GYFXCLZH",
     "children": 4
    }
   }
