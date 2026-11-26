@@ -21,6 +21,30 @@
     "bsr": 456,
     "asin": "B0F9PB5W82",
     "children": 5
+   },
+   "2026-10-26": {
+    "bsr": 496,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 533,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 594,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 725,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "HUG": {
@@ -43,6 +67,30 @@
     "bsr": 10832,
     "asin": "B07FC6KSL3",
     "children": 4
+   },
+   "2026-10-26": {
+    "bsr": 10739,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 9427,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 8165,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 11557,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB1": {
@@ -75,6 +123,18 @@
     "bsr": 351,
     "asin": "B0892M2BB1",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 344,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 437,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -107,6 +167,18 @@
     "bsr": 4844,
     "asin": "B07Y7JSRNJ",
     "children": 2
+   },
+   "2026-11-09": {
+    "bsr": 5423,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 5584,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KST": {
@@ -129,6 +201,30 @@
     "bsr": 7723,
     "asin": "B0F9PS7YTC",
     "children": 7
+   },
+   "2026-10-26": {
+    "bsr": 8132,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 12056,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 10743,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 11087,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB2": {
@@ -151,6 +247,30 @@
     "bsr": 2310,
     "asin": "B0D4ZMP6XH",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 1887,
+    "asin": "B0D4ZNZDRH",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 1796,
+    "asin": "B0D4ZNZDRH",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 2431,
+    "asin": "B0D4ZNZDRH",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 2406,
+    "asin": "B0D4ZNZDRH",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   }
  },
@@ -175,6 +295,30 @@
     "bsr": 202,
     "asin": "B0F9P56QBR",
     "children": 5
+   },
+   "2026-10-26": {
+    "bsr": 165,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 174,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 195,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 273,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "HUG": {
@@ -197,6 +341,30 @@
     "bsr": 788,
     "asin": "B0DQYRGY8W",
     "children": 6
+   },
+   "2026-10-26": {
+    "bsr": 604,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 646,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 952,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 887,
+    "asin": "B07FC37H9N",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB1": {
@@ -229,6 +397,18 @@
     "bsr": 227,
     "asin": "B0F9B5KDH6",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 269,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 264,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -283,6 +463,30 @@
     "bsr": 568,
     "asin": "B0C6KQ3V5D",
     "children": 14
+   },
+   "2026-10-26": {
+    "bsr": 436,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 395,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 407,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 475,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB2": {
@@ -315,6 +519,18 @@
     "bsr": 665,
     "asin": "B0B974V32V",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 654,
+    "asin": "B0B97439HB",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 733,
+    "asin": "B0B97439HB",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   }
  },
@@ -339,6 +555,30 @@
     "bsr": 1489,
     "asin": "B071VQG35B",
     "children": 5
+   },
+   "2026-10-26": {
+    "bsr": 1405,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 1731,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 1419,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 1395,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "HUG": {
@@ -393,6 +633,18 @@
     "bsr": 279,
     "asin": "B0892MT1V3",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 281,
+    "asin": "B07G85W2CN",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 310,
+    "asin": "B07G85W2CN",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -425,6 +677,12 @@
     "bsr": 6093,
     "asin": "B07Y7JSRNJ",
     "children": 1
+   },
+   "2026-11-16": {
+    "bsr": 5275,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KST": {
@@ -447,6 +705,30 @@
     "bsr": 2875,
     "asin": "B0C6KQ3V5D",
     "children": 12
+   },
+   "2026-10-26": {
+    "bsr": 2219,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 3167,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 3940,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 4456,
+    "asin": "B0C6KQ3V5D",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB2": {
@@ -479,6 +761,18 @@
     "bsr": 1395,
     "asin": "B0B974V32V",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 1156,
+    "asin": "B0CDD58HPG",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 1379,
+    "asin": "B0CDD58HPG",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   }
  },
@@ -503,6 +797,30 @@
     "bsr": 513,
     "asin": "B0F9PB5W82",
     "children": 5
+   },
+   "2026-10-26": {
+    "bsr": 648,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 638,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 607,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 688,
+    "asin": "B07287LFMS",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "HUG": {
@@ -525,6 +843,30 @@
     "bsr": 475,
     "asin": "B07FC37H9N",
     "children": 7
+   },
+   "2026-10-26": {
+    "bsr": 425,
+    "asin": "B07FC6KSL3",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 553,
+    "asin": "B07FC6KSL3",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 510,
+    "asin": "B07FC6KSL3",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 409,
+    "asin": "B07FC6KSL3",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB1": {
@@ -557,6 +899,18 @@
     "bsr": 155,
     "asin": "B0F9B5KDH6",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 173,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 197,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -589,6 +943,18 @@
     "bsr": 249,
     "asin": "B07Y7JSRNJ",
     "children": 2
+   },
+   "2026-11-09": {
+    "bsr": 263,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 322,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KST": {
@@ -611,6 +977,30 @@
     "bsr": 123,
     "asin": "B0B5LD23HJ",
     "children": 14
+   },
+   "2026-10-26": {
+    "bsr": 117,
+    "asin": "B0B5LCT5LT",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 118,
+    "asin": "B0B5LCT5LT",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 108,
+    "asin": "B0B5LCT5LT",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 113,
+    "asin": "B0B5LCT5LT",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KCB2": {
@@ -633,6 +1023,30 @@
     "bsr": 406,
     "asin": "B0D4ZMP6XH",
     "children": 8
+   },
+   "2026-10-26": {
+    "bsr": 393,
+    "asin": "B0B977LBZF",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-02": {
+    "bsr": 374,
+    "asin": "B0B977LBZF",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-09": {
+    "bsr": 424,
+    "asin": "B0B977LBZF",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 462,
+    "asin": "B0B977LBZF",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   }
  },
@@ -667,6 +1081,18 @@
     "bsr": 1123,
     "asin": "B07G85PQ5J",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 1338,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 1427,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -733,6 +1159,18 @@
     "bsr": 4833,
     "asin": "B07G84LSYJ",
     "children": 8
+   },
+   "2026-11-09": {
+    "bsr": 4859,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 5278,
+    "asin": "B07G85PQ5J",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KSC": {
@@ -765,6 +1203,18 @@
     "bsr": 658,
     "asin": "B07Y7JSRNJ",
     "children": 4
+   },
+   "2026-11-09": {
+    "bsr": 663,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 657,
+    "asin": "B07ND58735",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "KST": {
@@ -797,6 +1247,18 @@
     "bsr": 24789,
     "asin": "B0F9PXWXXD",
     "children": 11
+   },
+   "2026-11-09": {
+    "bsr": 25962,
+    "asin": "B0F9PR6363",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 20473,
+    "asin": "B0F9PR6363",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   },
   "CBA": {
@@ -829,6 +1291,18 @@
     "bsr": 15499,
     "asin": "B0GYFXCLZH",
     "children": 4
+   },
+   "2026-11-09": {
+    "bsr": 19155,
+    "asin": "B0GYFVQDL5",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
+   },
+   "2026-11-16": {
+    "bsr": 20308,
+    "asin": "B0GYFVQDL5",
+    "children": 1,
+    "source": "serie giornaliera helium10-bsr"
    }
   }
  }

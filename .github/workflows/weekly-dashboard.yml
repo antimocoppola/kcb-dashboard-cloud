@@ -48,6 +48,9 @@ jobs:
       - name: Ricostruisci la dashboard principale
         run: node scripts/cloud_build.mjs
 
+      - name: Aggiorna il BSR dalla serie giornaliera di helium10-bsr
+        run: node scripts/bsr_from_series.mjs
+
       - name: Genera la dashboard KPI settimanali
         run: node scripts/weekly_dashboard.mjs
 
@@ -55,7 +58,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/history.json data/pnl.json docs/index.html docs/kpi-settimanali.html
+          git add data/history.json data/pnl.json data/bsr_weekly.json docs/index.html docs/kpi-settimanali.html
           git diff --staged --quiet || git commit -m "KPI settimanali $(date -u +%Y-%m-%d)"
           git pull --rebase --autostash
           git push
